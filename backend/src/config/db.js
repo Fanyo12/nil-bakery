@@ -1,5 +1,6 @@
 import express from 'express';
 import authRoutes from './routes/auth.routes.js';
+import pool from './config/db.js';  // 👈 Mueve esto aquí arriba
 
 const app = express();
 
@@ -19,9 +20,6 @@ app.get('/api/ip', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-
-// Agrega esto al final de app.js, antes de export default app
-import pool from './config/db.js';
 
 app.get('/api/test-db', async (req, res) => {
   try {
