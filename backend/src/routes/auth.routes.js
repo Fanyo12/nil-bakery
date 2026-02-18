@@ -3,7 +3,10 @@ import { registerOptions, loginOptions } from '../controllers/auth.controller.js
 
 const router = express.Router();
 
-router.post('/register/options', registerOptions);
+router.post('/register/options', (req, res) => {
+  res.send("POST SI FUNCIONA");
+});
+
 router.post('/login/options', loginOptions);
 
 export default router;
