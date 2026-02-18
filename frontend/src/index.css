@@ -1,0 +1,14 @@
+/* Esto quita los márgenes invisibles que traen los navegadores por defecto */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Esto obliga a que la página siempre ocupe el 100% del ancho de la pantalla */
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden; /* Evita que aparezca una barra de desplazamiento horizontal fea */
+  background-color: #ffffff;
+}
