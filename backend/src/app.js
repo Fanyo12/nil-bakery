@@ -1,10 +1,17 @@
 import express from 'express';
 import authRoutes from './routes/auth.routes.js';
+import authBasicRoutes from './routes/authBasicRoutes.js';
+import pool from './config/db.js';
 
 const app = express();
 
+// ⚠️ PRIMERO JSON
 app.use(express.json());
 
+// 🔐 Auth básica (email + password)
+app.use('/api/auth', authBasicRoutes);
+
+// 🔐 Auth biométrica (WebAuthn)
 app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
@@ -19,9 +26,6 @@ app.get('/api/ip', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-
-// Agrega esto al final de app.js, antes de export default app
-import pool from './config/db.js';
 
 app.get('/api/test-db', async (req, res) => {
   try {
