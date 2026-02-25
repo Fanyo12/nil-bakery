@@ -1,5 +1,4 @@
-const db = require('../config/db');
-
+import db from '../config/db.js';
 class User {
 
     static async crearUsuario(nombre, email, password) {
