@@ -17,10 +17,12 @@ app.use(express.json());
 app.use(
   cors({
     origin: "https://nil-bakery-frontend.onrender.com",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
   })
 );
+app.options('*', cors())
 
 /* ============================
    RUTAS
