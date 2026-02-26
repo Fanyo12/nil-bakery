@@ -2,9 +2,10 @@ import express from 'express';
 import authRoutes from './routes/auth.routes.js';
 import authBasicRoutes from './routes/authBasicRoutes.js';
 import pool from './config/db.js';
-
+import cors from "cors";
 const app = express();
 
+app.use(cors());
 // ⚠️ PRIMERO JSON
 app.use(express.json());
 
