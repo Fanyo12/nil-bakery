@@ -1,13 +1,32 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../services/authService'; // <-- Importamos tu servicio de Login
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // <-- Herramienta para cambiar de página automáticamente
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    alert(`Intentando iniciar sesión con: ${email}`);
+    
+    try {
+      // Intentamos iniciar sesión con tu servicio
+      const res = await loginUser({ email, password });
+      console.log(res); // Para que veas en consola qué te responde el backend (ej. un token)
+      
+      alert(`¡Bienvenido de vuelta! ☕`);
+      
+      // Opcional: Si tu backend usa JWT (tokens), aquí deberías guardarlo
+      // localStorage.setItem('token', res.token); 
+
+      // Redirigimos al usuario al catálogo automáticamente
+      navigate('/'); 
+      
+    } catch (error) {
+      // Si la contraseña está mal o el usuario no existe, le avisamos
+      alert(error.message || "Error al iniciar sesión. Verifica tus datos.");
+    }
   };
 
   return (
@@ -16,8 +35,8 @@ export default function Login() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      // Otra foto de panadería más oscura para el fondo
-      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1486427944299-d1955d23e34d?q=80&w=2000&auto=format&fit=crop)',
+      // Foto de panadería más oscura para el fondo
+      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1555507036-ab1d4075c6f5?q=80&w=2000&auto=format&fit=crop)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       padding: '20px'
@@ -73,8 +92,8 @@ export default function Login() {
         </form>
         
         <p style={{ marginTop: '25px', fontSize: '13px', color: '#666' }}>
-  ¿No tienes cuenta? <Link to="/registro" style={{ color: '#b5835a', textDecoration: 'none', fontWeight: 'bold' }}>Regístrate aquí</Link>
-</p>
+          ¿No tienes cuenta? <Link to="/registro" style={{ color: '#b5835a', textDecoration: 'none', fontWeight: 'bold' }}>Regístrate aquí</Link>
+        </p>
 
       </div>
     </div>
