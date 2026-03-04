@@ -1,22 +1,50 @@
 import express from 'express';
+import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
 import authBasicRoutes from './routes/authBasicRoutes.js';
 import pool from './config/db.js';
 
 const app = express();
 
-// ⚠️ PRIMERO JSON
+/* ============================
+   MIDDLEWARES
+============================ */
+
+// Permitir JSON en requests
 app.use(express.json());
 
-// 🔐 Auth básica (email + password)
+// Configuración CORS (permite al frontend conectarse)
+app.use(
+  cors({
+    origin: "https://nil-bakery-frontend.onrender.com",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+  })
+);
+app.options('*', cors())
+
+/* ============================
+   RUTAS
+============================ */
+
+// Autenticación básica (email + password)
 app.use('/api/auth', authBasicRoutes);
 
-// 🔐 Auth biométrica (WebAuthn)
+// Autenticación biométrica (WebAuthn)
 app.use('/api/auth', authRoutes);
+
+/* ============================
+   RUTA BASE
+============================ */
 
 app.get('/', (req, res) => {
   res.json({ message: "NIL BAKERY API funcionando 🍰" });
 });
+
+/* ============================
+   IP DE RENDER
+============================ */
 
 app.get('/api/ip', (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -26,6 +54,10 @@ app.get('/api/ip', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+/* ============================
+   TEST CONEXIÓN BD
+============================ */
 
 app.get('/api/test-db', async (req, res) => {
   try {

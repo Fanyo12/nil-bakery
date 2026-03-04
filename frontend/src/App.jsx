@@ -8,7 +8,7 @@ import Register from './pages/register';
 import Cart from './pages/carrito';
 
 // Descomenta esta línea abajo y pon el nombre de tu logo cuando lo tengas
-// import logoPanaderia from './assets/tu-logo.png'; 
+// import logoPanaderia from './assets/tu-logo.png';
 
 function App() {
   // Memoria del carrito
