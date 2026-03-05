@@ -36,7 +36,7 @@ export default function Login() {
       alignItems: 'center',
       justifyContent: 'center',
       // Foto de panadería más oscura para el fondo
-      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1555507036-ab1d4075c6f5?q=80&w=2000&auto=format&fit=crop)',
+      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1486427944299-d1955d23e34d?q=80&w=2000&auto=format&fit=crop)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       padding: '20px'
