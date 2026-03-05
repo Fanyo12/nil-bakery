@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
 import authBasicRoutes from './routes/authBasicRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 import pool from './config/db.js';
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/auth', authBasicRoutes);
 // Autenticación biométrica (WebAuthn)
 app.use('/api/auth', authRoutes);
 
+app.use('/api/products', productRoutes);
 /* ============================
    RUTA BASE
 ============================ */
