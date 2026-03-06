@@ -32,8 +32,7 @@ app.options('*', cors())
 // Autenticación básica (email + password)
 app.use('/api/auth', authBasicRoutes);
 
-// Autenticación biométrica (WebAuthn)
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);  // 👈 Si authRoutes tiene cosas de WebAuthn
 
 app.use('/api/webauthn', webauthnRoutes);
 
