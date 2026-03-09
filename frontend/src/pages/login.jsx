@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/authService'; // <-- Importamos tu servicio de Login
+import { loginUser } from '../services/authService';
+import { useAuth } from '../context/AuthContext'; // 👈 IMPORTAR NUEVO
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // <-- Herramienta para cambiar de página automáticamente
+  const navigate = useNavigate();
+  const { login } = useAuth(); // 👈 USAR EL HOOK
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -13,36 +15,39 @@ export default function Login() {
     try {
       // Intentamos iniciar sesión con tu servicio
       const res = await loginUser({ email, password });
-      console.log(res); // Para que veas en consola qué te responde el backend (ej. un token)
+      console.log('Respuesta del backend:', res); // Para debug
       
-      alert(`¡Bienvenido de vuelta! ☕`);
-      
-      // Opcional: Si tu backend usa JWT (tokens), aquí deberías guardarlo
-      // localStorage.setItem('token', res.token); 
-
-      // Redirigimos al usuario al catálogo automáticamente
-      navigate('/'); 
+      // ✅ GUARDAR LA SESIÓN (esto es lo nuevo)
+      if (res.token && res.usuario) {
+        login(res.token, res.usuario); // Guarda en localStorage y contexto
+        alert(`¡Bienvenido de vuelta, ${res.usuario.nombre}! ☕`);
+        navigate('/'); // Redirigir al inicio
+      } else {
+        // Por si la estructura de la respuesta es diferente
+        console.log('Estructura de respuesta:', res);
+        alert('Login exitoso, pero faltan datos de usuario');
+        navigate('/');
+      }
       
     } catch (error) {
-      // Si la contraseña está mal o el usuario no existe, le avisamos
       alert(error.message || "Error al iniciar sesión. Verifica tus datos.");
     }
   };
 
+  // El resto de tu JSX queda IGUAL
   return (
     <div style={{
       minHeight: '85vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      // Foto de panadería más oscura para el fondo
       backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1486427944299-d1955d23e34d?q=80&w=2000&auto=format&fit=crop)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       padding: '20px'
     }}>
       
-      {/* Tarjeta de Login estilo "Cristal" */}
+      {/* Tarjeta de Login - TODO IGUAL */}
       <div style={{
         background: 'rgba(255, 255, 255, 0.95)',
         padding: '40px',
