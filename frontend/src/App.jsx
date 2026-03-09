@@ -13,7 +13,7 @@ import PanelUsuario from './pages/panelUsuario';
 import PanelAdmin from './pages/panelAdmin';
 
 // Estilos del nav
-import './styles/app.css';
+import './styles/App.css';
 
 function App() {
   const [carrito, setCarrito] = useState([]);
