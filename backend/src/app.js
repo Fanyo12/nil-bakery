@@ -16,15 +16,17 @@ app.use(express.json());
 
 // Configuración CORS (permite al frontend conectarse)
 app.use(
-  cors({
-    origin: "https://nil-bakery-frontend.onrender.com",
+  cors({  // 👈 FALTABA EL "cors("
+    origin: [
+      "https://nil-bakery-frontend.onrender.com",
+      "https://nil-bakery.onrender.com",
+      "http://localhost:5173"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
   })
 );
-app.options('*', cors())
-
 /* ============================
    RUTAS
 ============================ */
