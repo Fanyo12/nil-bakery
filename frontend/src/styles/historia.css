@@ -1,0 +1,201 @@
+/* ===== NUESTRA HISTORIA PAGE ===== */
+.historia-hero {
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    url('https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=2000&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.historia-hero__tag {
+  border: 1px solid rgba(255,255,255,0.6);
+  padding: 6px 18px;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-family: sans-serif;
+}
+
+.historia-hero__title {
+  font-family: 'Georgia', serif;
+  font-size: 48px;
+  margin: 0;
+  font-weight: normal;
+}
+
+.historia-container {
+  max-width: 900px;
+  margin: 70px auto;
+  padding: 0 40px;
+  font-family: sans-serif;
+}
+
+.historia-intro {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.historia-intro__title {
+  font-family: 'Georgia', serif;
+  font-size: 32px;
+  color: #3b2f2f;
+  margin-bottom: 10px;
+}
+
+.historia-intro__divider {
+  width: 50px;
+  height: 2px;
+  background: #b5835a;
+  border: none;
+  margin: 0 auto 24px;
+}
+
+.historia-intro__text {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.9;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* Timeline */
+.historia-timeline {
+  position: relative;
+  padding-left: 40px;
+}
+
+.historia-timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e8d5c0;
+}
+
+.historia-item {
+  position: relative;
+  margin-bottom: 48px;
+}
+
+.historia-item::before {
+  content: '';
+  position: absolute;
+  left: -36px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #b5835a;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #b5835a;
+}
+
+.historia-item__year {
+  font-size: 12px;
+  font-weight: bold;
+  color: #b5835a;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.historia-item__title {
+  font-family: 'Georgia', serif;
+  font-size: 22px;
+  color: #3b2f2f;
+  margin: 0 0 10px;
+}
+
+.historia-item__text {
+  font-size: 15px;
+  color: #777;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* Valores */
+.historia-valores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  margin-top: 70px;
+  text-align: center;
+}
+
+.historia-valor {
+  background: #faf6f2;
+  padding: 36px 24px;
+  border-radius: 10px;
+  border-top: 3px solid #b5835a;
+}
+
+.historia-valor__icon {
+  font-size: 36px;
+  margin-bottom: 14px;
+}
+
+.historia-valor__title {
+  font-family: 'Georgia', serif;
+  font-size: 18px;
+  color: #3b2f2f;
+  margin: 0 0 10px;
+}
+
+.historia-valor__text {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* CTA */
+.historia-cta {
+  text-align: center;
+  margin-top: 70px;
+  padding: 50px;
+  background: #3b2f2f;
+  border-radius: 12px;
+  color: white;
+}
+
+.historia-cta__title {
+  font-family: 'Georgia', serif;
+  font-size: 28px;
+  margin: 0 0 12px;
+  font-weight: normal;
+}
+
+.historia-cta__text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  margin: 0 0 24px;
+}
+
+.historia-cta__btn {
+  background: #b5835a;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s;
+}
+
+.historia-cta__btn:hover {
+  background: #c9956a;
+}

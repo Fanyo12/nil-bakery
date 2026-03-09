@@ -1,0 +1,98 @@
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 5vw;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  font-family: sans-serif;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar__logo a {
+  font-family: 'Georgia', serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #3b2f2f;
+  text-decoration: none;
+}
+
+.navbar__links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar__link {
+  text-decoration: none;
+  color: #333;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+
+.navbar__link:hover {
+  color: #b5835a;
+}
+
+.navbar__link--user {
+  color: #b5835a;
+}
+
+.navbar__btn-login {
+  text-decoration: none;
+  color: white;
+  background: #3b2f2f;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background 0.3s;
+}
+
+.navbar__btn-login:hover {
+  background: #b5835a;
+}
+
+.navbar__btn-logout {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #555;
+  font-size: 12px;
+  transition: all 0.2s;
+  font-family: sans-serif;
+}
+
+.navbar__btn-logout:hover {
+  border-color: #cc4444;
+  color: #cc4444;
+}
+
+.navbar__btn-cart {
+  text-decoration: none;
+  color: white;
+  background-color: #b5835a;
+  padding: 9px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.navbar__btn-cart:hover {
+  background-color: #c9956a;
+}

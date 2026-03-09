@@ -1,68 +1,63 @@
 import { useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom'; // 👈 Cambio aquí
-import { useAuth } from './context/AuthContext'; // 👈 IMPORTAR NUEVO
+import { Routes, Route, Link } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 
-// Importamos todas tus pantallas
+// Páginas
 import Home from './pages/home';
 import Login from './pages/login';
 import Register from './pages/register';
 import Cart from './pages/carrito';
+import Menu from './pages/menu';
+import NuestraHistoria from './pages/nuestraHistoria';
+import PanelUsuario from './pages/panelUsuario';
+import PanelAdmin from './pages/panelAdmin';
+
+// Estilos del nav
+import './styles/app.css';
 
 function App() {
-  // Memoria del carrito
   const [carrito, setCarrito] = useState([]);
-  const { user, logout } = useAuth(); // 👈 USAR AUTH
+  const { user, logout } = useAuth();
 
   const agregarAlCarrito = (postre) => {
     setCarrito([...carrito, postre]);
-    alert(`¡${postre.nombre} agregado al carrito!`); 
+    alert(`¡${postre.nombre} agregado al carrito!`);
   };
 
   return (
     <>
-      {/* MENÚ DE NAVEGACIÓN - AHORA CON USUARIO */}
-      <nav style={{ 
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-        padding: '20px 5vw', backgroundColor: '#ffffff', borderBottom: '1px solid #eaeaea', 
-        fontFamily: 'sans-serif', flexWrap: 'wrap', gap: '20px'
-      }}>
-        <div style={{ textAlign: 'center', flexGrow: 1, minWidth: '150px', fontSize: '24px', fontWeight: 'bold', fontFamily: 'serif' }}>
-          <Link to="/" style={{ textDecoration: 'none', color: '#333' }}>
-            ☕ Nil Bakery
-          </Link>
+      {/* NAVEGACIÓN */}
+      <nav className="navbar">
+        <div className="navbar__logo">
+          <Link to="/">Nil Bakery</Link>
         </div>
 
-        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', flexGrow: 2 }}>
-          <Link to="/" style={{ textDecoration: 'none', color: '#b5835a', fontSize: '13px', fontWeight: 'bold', textTransform: 'uppercase', borderBottom: '2px solid #b5835a', paddingBottom: '5px' }}>Inicio</Link>
-          <Link to="/menu" style={{ textDecoration: 'none', color: '#333', fontSize: '13px', fontWeight: 'bold', textTransform: 'uppercase' }}>Menú</Link>
-          
-          {/* 👇 SECCIÓN DE USUARIO - NUEVO */}
+        <div className="navbar__links">
+          <Link to="/" className="navbar__link">Inicio</Link>
+          <Link to="/menu" className="navbar__link">Menú</Link>
+          <Link to="/nuestra-historia" className="navbar__link">Nuestra Historia</Link>
+
           {user ? (
             <>
-              <span style={{ color: '#b5835a', fontWeight: 'bold' }}>👤 {user.nombre}</span>
-              <button 
-                onClick={() => {
-                  logout();
-                  window.location.href = '/';
-                }}
-                style={{ 
-                  background: 'none', 
-                  border: '1px solid #333',
-                  padding: '5px 10px',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  color: '#333',
-                  fontSize: '12px'
-                }}
+              <Link to="/mi-cuenta" className="navbar__link navbar__link--user">
+                👤 {user.nombre}
+              </Link>
+              {/* Mostrar panel admin solo si el usuario es admin */}
+              {user.rol === 'admin' && (
+                <Link to="/admin" className="navbar__link">Admin</Link>
+              )}
+              <button
+                onClick={() => { logout(); window.location.href = '/'; }}
+                className="navbar__btn-logout"
               >
                 Cerrar sesión
               </button>
             </>
           ) : (
-            <Link to="/login" style={{ textDecoration: 'none', color: '#333', fontSize: '13px', fontWeight: 'bold', textTransform: 'uppercase' }}>Iniciar Sesión</Link>
+            <Link to="/login" className="navbar__btn-login">Iniciar Sesión</Link>
           )}
-          
-          <Link to="/carrito" style={{ textDecoration: 'none', color: 'white', backgroundColor: '#b5835a', padding: '8px 15px', borderRadius: '20px', fontSize: '13px', fontWeight: 'bold' }}>
+
+          <Link to="/carrito" className="navbar__btn-cart">
             🛒 Mi Carrito ({carrito.length})
           </Link>
         </div>
@@ -71,9 +66,13 @@ function App() {
       {/* RUTAS */}
       <Routes>
         <Route path="/" element={<Home agregarAlCarrito={agregarAlCarrito} />} />
+        <Route path="/menu" element={<Menu agregarAlCarrito={agregarAlCarrito} />} />
+        <Route path="/nuestra-historia" element={<NuestraHistoria />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
         <Route path="/carrito" element={<Cart carrito={carrito} />} />
+        <Route path="/mi-cuenta" element={<PanelUsuario />} />
+        <Route path="/admin" element={<PanelAdmin />} />
       </Routes>
     </>
   );
