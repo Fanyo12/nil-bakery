@@ -1,36 +1,35 @@
-const API = "https://nil-bakery.onrender.com/api/auth";
+const API_URL = 'https://nil-bakery.onrender.com/api';
 
+// Login
+export const loginUser = async (credentials) => {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials)
+  });
+  
+  if (!response.ok) {
+    throw new Error('Error en el login');
+  }
+  
+  return response.json();
+};
+
+// Register - ¡NECESITAS ESTA!
 export const registerUser = async (userData) => {
-  const res = await fetch(`${API}/register`, {
-    method: "POST",
+  const response = await fetch(`${API_URL}/auth/register`, {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(userData),
+    body: JSON.stringify(userData)
   });
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Error register");
-
-  return data;
-};
-
-export const loginUser = async (userData) => {
-  const res = await fetch(`${API}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Error login");
-
-  return data;
-};
-
-export const getUsers = async () => {
-  const res = await fetch(`${API}/users`);
-  return res.json();
+  
+  if (!response.ok) {
+    throw new Error('Error en el registro');
+  }
+  
+  return response.json();
 };
