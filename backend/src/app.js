@@ -6,7 +6,7 @@ import productRoutes from './routes/productRoutes.js';
 import pool from './config/db.js';
 
 const app = express();
-
+import webauthnRoutes from './routes/webauthnRoutes.js';
 /* ============================
    MIDDLEWARES
 ============================ */
@@ -32,8 +32,9 @@ app.options('*', cors())
 // Autenticación básica (email + password)
 app.use('/api/auth', authBasicRoutes);
 
-// Autenticación biométrica (WebAuthn)
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);  // 👈 Si authRoutes tiene cosas de WebAuthn
+
+app.use('/api/webauthn', webauthnRoutes);
 
 app.use('/api/products', productRoutes);
 /* ============================
