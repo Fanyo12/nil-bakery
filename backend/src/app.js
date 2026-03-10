@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(
   cors({  // 👈 FALTABA EL "cors("
     origin: [
-      "https://nil-bakery-frontend.onrender.com",
+      "https://nil-bakery-1.onrender.com",
       "https://nil-bakery.onrender.com",
       "http://localhost:5173"
     ],
