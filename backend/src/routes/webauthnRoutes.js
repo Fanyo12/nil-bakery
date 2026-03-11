@@ -1,12 +1,15 @@
 import express from 'express';
-import { generateRegistration, verifyRegistration } from '../controllers/webauthnController.js';
+import { 
+  registerOptions,      // 👈 antes era generateRegistration
+  verifyRegistration     // 👈 este sí está bien
+} from '../controllers/webauthnController.js';
 
 const router = express.Router();
 
-// Ruta para INICIAR registro (ya existía)
-router.post('/register/begin', generateRegistration);
+// Ruta para INICIAR registro
+router.post('/register/begin', registerOptions);  // 👈 actualizado
 
-// NUEVA RUTA: Completar registro
+// Ruta para COMPLETAR registro
 router.post('/register/complete', verifyRegistration);
 
 export default router;
