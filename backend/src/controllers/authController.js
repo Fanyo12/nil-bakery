@@ -131,8 +131,8 @@ const verifyRegistration = async (req, res) => {
   }
 };
 
-// ANTES (solo tenías generateRegistration)
-export { generateRegistration };
-
-// DESPUÉS (agrega la nueva función)
-export { generateRegistration, verifyRegistration };
+export { 
+  registerOptions, 
+  loginOptions, 
+  verifyRegistration 
+};
