@@ -85,7 +85,7 @@ export default function Register() {
       });
 
       // Paso D: enviar credencial al backend para guardarla
-      const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/finish`, {
+      const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
