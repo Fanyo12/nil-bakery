@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import { useAuth } from '../context/AuthContext'; // 👈 IMPORTAR NUEVO
+import fondoImg from "../assets/fondo 1.jpeg";
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -41,7 +42,7 @@ export default function Login() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1486427944299-d1955d23e34d?q=80&w=2000&auto=format&fit=crop)',
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),  url(${fondoImg})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       padding: '20px'

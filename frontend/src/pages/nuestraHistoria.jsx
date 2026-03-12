@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import '../styles/historia.css';
+import fondoImg from "../assets/fondo 1.jpeg";
 
 const timeline = [
   {

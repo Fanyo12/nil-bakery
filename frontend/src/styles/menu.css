@@ -1,7 +1,7 @@
 /* ===== MENU PAGE ===== */
 .menu-hero {
   background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-    url('https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=2000&auto=format&fit=crop');
+    url('../assets/fondo 3.jpeg');
   background-size: cover;
   background-position: center;
   height: 280px;

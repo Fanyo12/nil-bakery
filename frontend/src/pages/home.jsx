@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext'; // 👈 IMPORTAR
 import { useNavigate } from 'react-router-dom'; // 👈 IMPORTAR
+import fondoImg from "../assets/fondo 3.jpeg";
+import imgCupcake from "../assets/cup cakes.jpeg";
+import imgGalletas from "../assets/galletas de fresa.jpeg";
+import imgPan from "../assets/pan de muerto.jpeg";
+import imgPastel from "../assets/pastel de chocolate.jpeg";
+import imgPay from "../assets/pay de fresa.jpeg";
 
 export default function Home({ agregarAlCarrito }) {
   const { user, logout } = useAuth(); // 👈 OBTENER USUARIO Y LOGOUT
@@ -11,15 +17,16 @@ export default function Home({ agregarAlCarrito }) {
     navigate('/');
   };
 
-  const [postres, setPostres] = useState([
-    { id: 1, nombre: 'Pastel de Chocolate', precio: 250, imagen: '🍫' },
-    { id: 2, nombre: 'Cheesecake de Fresa', precio: 180, imagen: '🍰' },
-    { id: 3, nombre: 'Pan de Muerto Especial', precio: 35, imagen: '🥐' },
-    { id: 4, nombre: 'Galletas de Mantequilla', precio: 15, imagen: '🍪' },
-    { id: 5, nombre: 'Cupcake de Vainilla', precio: 25, imagen: '🧁' },
-  ]);
+const [postres, setPostres] = useState([
+  { id: 1, nombre: 'Pastel de Chocolate', precio: 250, imagen: imgPastel },
+  { id: 2, nombre: 'Cheesecake de Fresa', precio: 180, imagen: imgPay },
+  { id: 3, nombre: 'Pan de Muerto Especial', precio: 35, imagen: imgPan },
+  { id: 4, nombre: 'Galletas de Mantequilla', precio: 15, imagen: imgGalletas },
+  { id: 5, nombre: 'Cupcake de Vainilla', precio: 25, imagen: imgCupcake },
+]);
 
   return (
+    
     <div style={{ fontFamily: 'sans-serif', margin: '0', padding: '0' }}>
       
       {/* 👇 NUEVO: NAVBAR CON AUTENTICACIÓN */}
@@ -96,20 +103,20 @@ export default function Home({ agregarAlCarrito }) {
       </nav>
 
       {/* SECCIÓN HERO - agregamos padding top para que no quede debajo del navbar */}
-      <div style={{ 
-        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=2000&auto=format&fit=crop)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minHeight: '80vh', 
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        textAlign: 'center',
-        padding: '80px 20px 40px 20px', // 👈 padding top aumentado
-        marginTop: '60px' // 👈 margen para compensar navbar fixed
-      }}>
+        <div style={{ 
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${fondoImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          minHeight: '80vh', 
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          textAlign: 'center',
+          padding: '80px 20px 40px 20px',
+          marginTop: '60px'
+        }}>
         <span style={{ border: '1px solid rgba(255,255,255,0.5)', padding: '5px 15px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px', color: '#e0c3a8' }}>
           Panadería Artesanal
         </span>
@@ -141,7 +148,7 @@ export default function Home({ agregarAlCarrito }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
           {postres.map((postre) => (
             <div key={postre.id} style={{ border: '1px solid #eee', padding: '25px', width: '220px', textAlign: 'center', backgroundColor: 'white', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-              <div style={{ fontSize: '70px', margin: '10px 0' }}>{postre.imagen}</div>
+              <img src={postre.imagen} alt={postre.nombre} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px' }} />
               <h3 style={{ fontSize: '18px', margin: '15px 0', color: '#333', fontFamily: 'serif' }}>{postre.nombre}</h3>
               <p style={{ color: '#b5835a', fontSize: '20px', margin: '10px 0' }}>${postre.precio}</p>
               <button 

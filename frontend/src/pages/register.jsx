@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUser } from "../services/authService";
-
+import fondoImg from "../assets/fondo 2.jpeg";
 const BACKEND_URL = "https://nil-bakery.onrender.com";
 
 export default function Register() {
@@ -134,7 +134,7 @@ export default function Register() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      backgroundImage: "linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1486427944299-d1955d23e34d?q=80&w=2000&auto=format&fit=crop)",
+      backgroundImage: `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${fondoImg})`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       padding: "40px 20px",

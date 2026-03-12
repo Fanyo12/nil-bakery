@@ -1,7 +1,7 @@
 /* ===== NUESTRA HISTORIA PAGE ===== */
 .historia-hero {
   background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-    url('https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=2000&auto=format&fit=crop');
+    url('../assets/fondo 1.jpeg');
   background-size: cover;
   background-position: center;
   height: 320px;
