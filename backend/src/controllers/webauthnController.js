@@ -32,7 +32,7 @@ const generateRegistration = async (req, res) => {
     }
 
     const rpID = process.env.NODE_ENV === 'production'
-      ? 'https://nil-bakery-1.onrender.com'
+      ? 'nil-bakery-1.onrender.com'
       : 'localhost';
 
     const options = await generateRegistrationOptions({
@@ -103,7 +103,7 @@ const verifyRegistration = async (req, res) => {
         : 'http://localhost:5173',
 
       expectedRPID: process.env.NODE_ENV === 'production'
-        ? 'https://nil-bakery-1.onrender.com'
+        ? 'nil-bakery-1.onrender.com'
         : 'localhost'
 
     });
