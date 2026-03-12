@@ -32,7 +32,7 @@ const generateRegistration = async (req, res) => {
     }
 
     const rpID = process.env.NODE_ENV === 'production'
-      ? 'nil-bakery.onrender.com'
+      ? 'https://nil-bakery-1.onrender.com'
       : 'localhost';
 
     const options = await generateRegistrationOptions({
@@ -99,11 +99,11 @@ const verifyRegistration = async (req, res) => {
       expectedChallenge: user.current_challenge,
 
       expectedOrigin: process.env.NODE_ENV === 'production'
-        ? 'https://nil-bakery-frontend.onrender.com'
+        ? 'https://nil-bakery-1.onrender.com'
         : 'http://localhost:5173',
 
       expectedRPID: process.env.NODE_ENV === 'production'
-        ? 'nil-bakery.onrender.com'
+        ? 'https://nil-bakery-1.onrender.com'
         : 'localhost'
 
     });
