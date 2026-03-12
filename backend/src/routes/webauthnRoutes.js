@@ -1,10 +1,15 @@
 import express from 'express';
-import { generateRegistration } from '../controllers/webauthnController.js';
+import { 
+  generateRegistration,
+  verifyRegistration
+} from '../controllers/webauthnController.js';
 
 const router = express.Router();
 
-// Ruta para INICIAR el registro biométrico
-// POST /api/webauthn/register/begin
+// iniciar registro biométrico
 router.post('/register/begin', generateRegistration);
+
+// completar registro biométrico
+router.post('/register/complete', verifyRegistration);
 
 export default router;

@@ -1,73 +1,161 @@
-import { generateRegistrationOptions } from '@simplewebauthn/server';
-import pool from '../config/db.js'; // Ajusta la ruta según tu estructura
+import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
+import pool from '../config/db.js';
 
+
+// ===============================
+// BEGIN REGISTRATION
+// ===============================
 const generateRegistration = async (req, res) => {
   try {
-    // 1. El frontend nos envía el email del usuario
+
     const { email } = req.body;
-    
+
     console.log('Iniciando registro biométrico para:', email);
 
-    // 2. Buscar si el usuario existe en nuestra BD
     const [users] = await pool.query(
-      'SELECT * FROM usuarios WHERE email = ?', 
+      'SELECT * FROM usuarios WHERE email = ?',
       [email]
     );
-    
-    // 3. Si no existe, error
+
     if (users.length === 0) {
-      return res.status(404).json({ 
-        error: 'Usuario no encontrado' 
+      return res.status(404).json({
+        error: 'Usuario no encontrado'
       });
     }
-    
+
     const user = users[0];
-    console.log('Usuario encontrado:', user.id);
 
-    // 4. Verificar si ya tiene un dispositivo registrado
     if (user.credential_id) {
-      return res.status(400).json({ 
-        error: 'Este usuario ya tiene un dispositivo registrado' 
+      return res.status(400).json({
+        error: 'Este usuario ya tiene un dispositivo registrado'
       });
     }
 
-    // 5. Determinar el RP ID según el entorno
-    const rpID = process.env.NODE_ENV === 'production' 
-      ? 'nil-bakery.onrender.com'  // producción
-      : 'localhost';                 // desarrollo
+    const rpID = process.env.NODE_ENV === 'production'
+      ? 'nil-bakery.onrender.com'
+      : 'localhost';
 
-    // 6. Generar las opciones para el registro biométrico
     const options = await generateRegistrationOptions({
       rpName: 'Nil Bakery',
-      rpID: rpID,
+      rpID,
       userID: user.id.toString(),
       userName: user.email,
       userDisplayName: user.nombre || user.email,
-      excludeCredentials: [],
-      authenticatorSelection: {
-        userVerification: 'preferred',
-      },
       timeout: 60000,
+      authenticatorSelection: {
+        userVerification: 'preferred'
+      }
     });
 
-    // 7. Guardar el challenge en la base de datos
+    // guardar challenge en BD
     await pool.query(
       'UPDATE usuarios SET current_challenge = ? WHERE id = ?',
       [options.challenge, user.id]
     );
-    
+
     console.log('Challenge guardado para usuario:', user.id);
 
-    // 8. Enviar las opciones al frontend
     res.json(options);
 
   } catch (error) {
+
     console.error('Error en generateRegistration:', error);
-    res.status(500).json({ 
-      error: 'Error al generar registro biométrico' 
+
+    res.status(500).json({
+      error: 'Error al generar registro biométrico'
     });
+
   }
 };
 
-// Exportamos la función
-export { generateRegistration };
+
+
+// ===============================
+// COMPLETE REGISTRATION
+// ===============================
+const verifyRegistration = async (req, res) => {
+
+  try {
+
+    const { email, attestationResponse } = req.body;
+
+    const [users] = await pool.query(
+      'SELECT * FROM usuarios WHERE email = ?',
+      [email]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({
+        error: 'Usuario no encontrado'
+      });
+    }
+
+    const user = users[0];
+
+    const verification = await verifyRegistrationResponse({
+
+      response: attestationResponse,
+
+      expectedChallenge: user.current_challenge,
+
+      expectedOrigin: process.env.NODE_ENV === 'production'
+        ? 'https://nil-bakery-frontend.onrender.com'
+        : 'http://localhost:5173',
+
+      expectedRPID: process.env.NODE_ENV === 'production'
+        ? 'nil-bakery.onrender.com'
+        : 'localhost'
+
+    });
+
+    if (verification.verified) {
+
+      const { credentialID, credentialPublicKey } = verification.registrationInfo;
+
+      await pool.query(
+        `UPDATE usuarios 
+         SET credential_id = ?, 
+             public_key = ?, 
+             current_challenge = NULL 
+         WHERE id = ?`,
+        [
+          Buffer.from(credentialID).toString('base64'),
+          Buffer.from(credentialPublicKey).toString('base64'),
+          user.id
+        ]
+      );
+
+      console.log("✅ Dispositivo registrado:", user.id);
+
+      res.json({
+        verified: true,
+        message: "Dispositivo registrado correctamente"
+      });
+
+    } else {
+
+      res.status(400).json({
+        verified: false,
+        error: "Verificación fallida"
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error("Error en verifyRegistration:", error);
+
+    res.status(500).json({
+      error: "Error verificando registro biométrico"
+    });
+
+  }
+
+};
+
+
+// exportar funciones
+export {
+  generateRegistration,
+  verifyRegistration
+};
