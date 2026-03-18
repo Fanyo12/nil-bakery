@@ -79,25 +79,26 @@ export default function Register() {
         }));
       }
 
-      // Paso C: activar biometría del dispositivo
-      const credential = await navigator.credentials.create({
-        publicKey: options,
-      });
+// Paso C: activar biometría del dispositivo
+const cred = await navigator.credentials.create({
+  publicKey: options,
+});
 
-      // Paso D: enviar credencial al backend para guardarla
-     const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
+// Paso D: convertir y enviar al backend
+const credentialJSON = {
+  id: cred.id,
+  rawId: bufferToBase64(cred.rawId),
+  type: cred.type,
+  response: {
+    clientDataJSON: bufferToBase64(cred.response.clientDataJSON),
+    attestationObject: bufferToBase64(cred.response.attestationObject),
+  },
+};
+
+const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email: form.email,
-    id: credential.id,
-    rawId: bufferToBase64(credential.rawId),
-    type: credential.type,
-    response: {
-      attestationObject: bufferToBase64(credential.response.attestationObject),
-      clientDataJSON: bufferToBase64(credential.response.clientDataJSON),
-    },
-  }),
+  body: JSON.stringify(credentialJSON),
 });
 
       if (!finishRes.ok) throw new Error("Error al guardar la huella.");
