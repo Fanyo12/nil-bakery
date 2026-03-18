@@ -85,22 +85,20 @@ export default function Register() {
       });
 
       // Paso D: enviar credencial al backend para guardarla
-      const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: form.email,
-          credential: {
-            id: credential.id,
-            rawId: bufferToBase64(credential.rawId),
-            type: credential.type,
-            response: {
-              attestationObject: bufferToBase64(credential.response.attestationObject),
-              clientDataJSON: bufferToBase64(credential.response.clientDataJSON),
-            },
-          },
-        }),
-      });
+     const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email: form.email,
+    id: credential.id,
+    rawId: bufferToBase64(credential.rawId),
+    type: credential.type,
+    response: {
+      attestationObject: bufferToBase64(credential.response.attestationObject),
+      clientDataJSON: bufferToBase64(credential.response.clientDataJSON),
+    },
+  }),
+});
 
       if (!finishRes.ok) throw new Error("Error al guardar la huella.");
 
