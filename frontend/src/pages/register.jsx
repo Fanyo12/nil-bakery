@@ -2,7 +2,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUser } from "../services/authService";
 import fondoImg from "../assets/fondo 2.jpeg";
+
 const BACKEND_URL = "https://nil-bakery.onrender.com";
+
+// ── Helpers base64 (fuera de todo, al nivel del módulo) ───────────────
+function base64ToBuffer(base64) {
+  const bin = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from(bin, (c) => c.charCodeAt(0)).buffer;
+}
+
+function bufferToBase64(buffer) {
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+}
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -13,7 +27,6 @@ export default function Register() {
   });
 
   const [usuarioRegistrado, setUsuarioRegistrado] = useState(false);
-  const [userId, setUserId] = useState(null);
   const [huellaCargando, setHuellaCargando] = useState(false);
   const [huellaRegistrada, setHuellaRegistrada] = useState(false);
 
@@ -36,10 +49,7 @@ export default function Register() {
         email: form.email,
         password: form.password,
       });
-
       console.log(res);
-      // Guardamos el id del usuario para usarlo en WebAuthn
-      setUserId(res.id || res.userId || res.user?.id);
       setUsuarioRegistrado(true);
       alert("¡Usuario creado con éxito! 🔥 Ahora puedes registrar tu huella.");
     } catch (error) {
@@ -61,7 +71,7 @@ export default function Register() {
       const res = await fetch(`${BACKEND_URL}/api/webauthn/register/begin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email })
+        body: JSON.stringify({ email: form.email }),
       });
 
       if (!res.ok) throw new Error("Error al iniciar el registro biométrico.");
@@ -79,32 +89,34 @@ export default function Register() {
         }));
       }
 
-// Paso C: activar biometría del dispositivo
-const cred = await navigator.credentials.create({
-  publicKey: options,
-});
+      // Paso C: activar biometría del dispositivo
+      const cred = await navigator.credentials.create({
+        publicKey: options,
+      });
 
-// Paso D: convertir y enviar al backend
-const credentialJSON = {
-  id: cred.id,
-  rawId: bufferToBase64(cred.rawId),
-  type: cred.type,
-  response: {
-    clientDataJSON: bufferToBase64(cred.response.clientDataJSON),
-    attestationObject: bufferToBase64(cred.response.attestationObject),
-  },
-};
-
-const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(credentialJSON),
-});
+      // Paso D: enviar credencial al backend para guardarla
+      const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          attestationResponse: {
+            id: cred.id,
+            rawId: bufferToBase64(cred.rawId),
+            type: cred.type,
+            response: {
+              clientDataJSON: bufferToBase64(cred.response.clientDataJSON),
+              attestationObject: bufferToBase64(cred.response.attestationObject),
+            },
+          },
+        }),
+      });
 
       if (!finishRes.ok) throw new Error("Error al guardar la huella.");
 
       setHuellaRegistrada(true);
       alert("¡Huella registrada con éxito! 🖐️✅");
+
     } catch (error) {
       console.error(error);
       alert("No se pudo registrar la huella: " + error.message);
@@ -113,20 +125,7 @@ const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
     }
   };
 
-  // ── Helpers base64 ──────────────────────────────────────────────────
-  function base64ToBuffer(base64) {
-    const bin = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
-    return Uint8Array.from(bin, (c) => c.charCodeAt(0)).buffer;
-  }
-
-  function bufferToBase64(buffer) {
-    return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=/g, "");
-  }
-
-  // ── UI ───────────────────────────────────────────────────────────────
+  // ── UI ────────────────────────────────────────────────────────────────
   return (
     <div style={{
       minHeight: "85vh",
@@ -155,7 +154,6 @@ const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
           Únete a Nil Bakery para hacer tus pedidos
         </p>
 
-        {/* ── Formulario de registro ── */}
         {!usuarioRegistrado ? (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             <div style={{ textAlign: "left" }}>
@@ -185,7 +183,6 @@ const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
             <button type="submit" style={btnPrimaryStyle}>Registrarse</button>
           </form>
         ) : (
-          /* ── Sección de huella (aparece tras registrarse) ── */
           <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             <div style={{ background: "#f0faf0", border: "1px solid #a8d5a2", borderRadius: "8px", padding: "15px" }}>
               <p style={{ color: "#2d6a2d", fontWeight: "bold", margin: "0 0 5px" }}>✅ ¡Cuenta creada!</p>
@@ -229,7 +226,6 @@ const finishRes = await fetch(`${BACKEND_URL}/api/webauthn/register/complete`, {
   );
 }
 
-// ── Estilos reutilizables ─────────────────────────────────────────────
 const labelStyle = {
   fontWeight: "bold", fontSize: "11px", color: "#333",
   textTransform: "uppercase", letterSpacing: "1px",
