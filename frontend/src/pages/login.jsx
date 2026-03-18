@@ -6,6 +6,19 @@ import fondoImg from "../assets/fondo 1.jpeg";
 
 const BACKEND_URL = "https://nil-bakery.onrender.com";
 
+// ── Helpers base64 ────────────────────────────────────────────────────
+function base64ToBuffer(base64) {
+  const bin = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from(bin, (c) => c.charCodeAt(0)).buffer;
+}
+
+function bufferToBase64(buffer) {
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+}
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,7 +38,6 @@ export default function Login() {
         alert(`¡Bienvenido de vuelta, ${res.usuario.nombre}! ☕`);
         navigate('/');
       } else {
-        console.log('Estructura de respuesta:', res);
         alert('Login exitoso, pero faltan datos de usuario');
         navigate('/');
       }
@@ -53,7 +65,7 @@ export default function Login() {
       const res = await fetch(`${BACKEND_URL}/api/webauthn/login/begin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: email }),
+        body: JSON.stringify({ email }),
       });
 
       if (!res.ok) throw new Error("Error al iniciar sesión biométrica.");
@@ -71,42 +83,42 @@ export default function Login() {
       }
 
       // Paso C: activar biometría del dispositivo
-      const credential = await navigator.credentials.get({
+      const cred = await navigator.credentials.get({
         publicKey: options,
       });
 
-      // Paso D: enviar credencial al backend para verificar
+      // Paso D: convertir y enviar credential al backend
+      const credentialJSON = {
+        id: cred.id,
+        rawId: bufferToBase64(cred.rawId),
+        type: cred.type,
+        response: {
+          clientDataJSON: bufferToBase64(cred.response.clientDataJSON),
+          authenticatorData: bufferToBase64(cred.response.authenticatorData),
+          signature: bufferToBase64(cred.response.signature),
+          userHandle: cred.response.userHandle
+            ? bufferToBase64(cred.response.userHandle)
+            : null,
+        },
+      };
+
       const completeRes = await fetch(`${BACKEND_URL}/api/webauthn/login/complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: email,
-          credential: {
-            id: credential.id,
-            rawId: bufferToBase64(credential.rawId),
-            type: credential.type,
-            response: {
-              authenticatorData: bufferToBase64(credential.response.authenticatorData),
-              clientDataJSON: bufferToBase64(credential.response.clientDataJSON),
-              signature: bufferToBase64(credential.response.signature),
-              userHandle: credential.response.userHandle
-                ? bufferToBase64(credential.response.userHandle)
-                : null,
-            },
-          },
-        }),
+        body: JSON.stringify(credentialJSON),
       });
 
       if (!completeRes.ok) throw new Error("Huella no reconocida.");
 
       const data = await completeRes.json();
+      console.log("Login biométrico exitoso:", data);
 
       if (data.token && data.usuario) {
         login(data.token, data.usuario);
         alert(`¡Bienvenido, ${data.usuario.nombre}! 🖐️✅`);
         navigate('/');
       } else {
-        alert('Huella verificada, pero faltan datos de usuario');
+        alert('Huella verificada ✅');
         navigate('/');
       }
 
@@ -117,19 +129,6 @@ export default function Login() {
       setHuellaCargando(false);
     }
   };
-
-  // ── Helpers base64 ───────────────────────────────────────────────────
-  function base64ToBuffer(base64) {
-    const bin = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
-    return Uint8Array.from(bin, (c) => c.charCodeAt(0)).buffer;
-  }
-
-  function bufferToBase64(buffer) {
-    return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=/g, "");
-  }
 
   // ── UI ────────────────────────────────────────────────────────────────
   return (
@@ -155,11 +154,14 @@ export default function Login() {
         fontFamily: 'sans-serif'
       }}>
 
-        <h2 style={{ fontFamily: 'serif', color: '#3b2f2f', fontSize: '32px', marginBottom: '5px', marginTop: '0' }}>Bienvenido</h2>
-        <p style={{ color: '#666', marginBottom: '30px', fontSize: '14px' }}>Ingresa a tu cuenta para continuar</p>
+        <h2 style={{ fontFamily: 'serif', color: '#3b2f2f', fontSize: '32px', marginBottom: '5px', marginTop: '0' }}>
+          Bienvenido
+        </h2>
+        <p style={{ color: '#666', marginBottom: '30px', fontSize: '14px' }}>
+          Ingresa a tu cuenta para continuar
+        </p>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
           <div style={{ textAlign: 'left' }}>
             <label style={labelStyle}>Correo Electrónico</label>
             <input
@@ -184,9 +186,7 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" style={btnDarkStyle}>
-            Entrar
-          </button>
+          <button type="submit" style={btnDarkStyle}>Entrar</button>
         </form>
 
         {/* Separador */}
@@ -201,7 +201,7 @@ export default function Login() {
           onClick={handleLoginHuella}
           disabled={huellaCargando}
           style={{
-            ...btnHuellaStyle,
+            ...btnDarkStyle,
             background: huellaCargando ? '#999' : '#b5835a',
             cursor: huellaCargando ? 'not-allowed' : 'pointer',
           }}
@@ -241,13 +241,5 @@ const btnDarkStyle = {
   border: 'none', borderRadius: '5px', cursor: 'pointer',
   fontSize: '14px', textTransform: 'uppercase',
   letterSpacing: '2px', marginTop: '10px', transition: '0.3s',
-  width: '100%',
-};
-
-const btnHuellaStyle = {
-  padding: '15px', color: 'white',
-  border: 'none', borderRadius: '5px',
-  fontSize: '14px', textTransform: 'uppercase',
-  letterSpacing: '1px', transition: '0.3s',
   width: '100%',
 };
