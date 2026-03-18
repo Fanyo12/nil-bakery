@@ -61,7 +61,7 @@ export default function Register() {
       const res = await fetch(`${BACKEND_URL}/api/webauthn/register/begin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: form.email }),
+        body: JSON.stringify({ email: form.email })
       });
 
       if (!res.ok) throw new Error("Error al iniciar el registro biométrico.");
