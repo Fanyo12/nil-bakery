@@ -225,6 +225,5 @@ const verifyRegistration = async (req, res) => {
 export { 
   registerOptions, 
   loginOptions, 
-  verifyRegistration,
-  verifyLogin
+  verifyRegistration
 };
