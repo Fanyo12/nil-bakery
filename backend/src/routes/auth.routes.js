@@ -1,17 +1,24 @@
 import express from 'express';
+import { 
+  registerOptions, 
+  loginOptions, 
+  verifyRegistration,
+  verifyLogin
+} from '../controllers/authController.js';
 
 const router = express.Router();
 
+// TEST
 router.get('/', (req, res) => {
   res.send("AUTH ROUTER FUNCIONANDO");
 });
 
-router.post('/register/options', (req, res) => {
-  res.send("REGISTER OPTIONS FUNCIONA");
-});
+// 🔐 REGISTRO
+router.post('/register/options', registerOptions);
+router.post('/register/verify', verifyRegistration);
 
-router.post('/login/options', (req, res) => {
-  res.send("LOGIN OPTIONS FUNCIONA");
-});
+// 🔐 LOGIN
+router.post('/login/options', loginOptions);
+router.post('/login/finish', verifyLogin);
 
 export default router;
