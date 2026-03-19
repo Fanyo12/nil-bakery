@@ -113,16 +113,18 @@ export default function Login() {
 
       if (!completeRes.ok) throw new Error("Huella no reconocida.");
 
-      const data = await completeRes.json();
+          const data = await completeRes.json();
       console.log("Login biométrico exitoso:", data);
 
       if (data.token && data.usuario) {
         login(data.token, data.usuario);
         alert(`¡Bienvenido, ${data.usuario.nombre}! 🖐️✅`);
         navigate('/');
+      } else if (data.success) {
+        // Mientras Fanny agrega token y usuario
+        alert("Huella verificada ✅ pero el backend no devuelve sesión aún.");
       } else {
-        alert('Huella verificada ✅');
-        navigate('/');
+        alert("Error al iniciar sesión con huella.");
       }
 
     } catch (error) {
