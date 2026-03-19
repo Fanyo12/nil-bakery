@@ -1,4 +1,4 @@
-import { getRegistrationOptions, getAuthenticationOptions } from '../services/webauthn.service.js';
+import { getRegistrationOptions, getAuthenticationOptions } from '../utils/webauthn.js';
 import { saveChallenge } from '../utils/challengeStore.js';
 import { verifyAuthenticationResponse } from '@simplewebauthn/server';
 import jwt from 'jsonwebtoken';
