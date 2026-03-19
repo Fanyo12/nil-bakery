@@ -102,10 +102,13 @@ export default function Login() {
         },
       };
 
-      const completeRes = await fetch(`${BACKEND_URL}/api/webauthn/login/complete`, {
+          const completeRes = await fetch(`${BACKEND_URL}/api/webauthn/login/complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentialJSON),
+        body: JSON.stringify({
+          email: email,           // 👈 agregar email
+          credential: credentialJSON  // 👈 envolver en credential
+        }),
       });
 
       if (!completeRes.ok) throw new Error("Huella no reconocida.");
