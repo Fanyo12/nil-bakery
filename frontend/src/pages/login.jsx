@@ -173,7 +173,13 @@ export default function Login() {
               type="email"
               placeholder="ejemplo@correo.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                // Pre-calentar el backend
+                if (e.target.value.includes('@')) {
+                  fetch(`${BACKEND_URL}/api/webauthn/login/begin`, { method: 'POST' }).catch(() => {});
+                }
+              }}
               required
               style={inputStyle}
             />
