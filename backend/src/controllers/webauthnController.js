@@ -154,10 +154,19 @@ const verifyRegistration = async (req, res) => {
 
   }
 
-};const generateAuthentication = async (req, res) => {
+}
+const generateAuthentication = async (req, res) => {
   try {
+    // 🔥 mantener conexión viva
+    await pool.query('SELECT 1');
 
     const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        error: 'Email requerido'
+      });
+    }
 
     const [users] = await pool.query(
       'SELECT * FROM usuarios WHERE email = ?',
@@ -165,14 +174,16 @@ const verifyRegistration = async (req, res) => {
     );
 
     if (users.length === 0) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
+      return res.status(404).json({
+        error: 'Usuario no encontrado'
+      });
     }
 
     const user = users[0];
 
     if (!user.credential_id) {
       return res.status(400).json({
-        error: 'Usuario sin registro biométrico'
+        error: 'Este usuario no tiene biometría registrada'
       });
     }
 
@@ -182,24 +193,32 @@ const verifyRegistration = async (req, res) => {
 
     const options = await generateAuthenticationOptions({
       rpID,
-      allowCredentials: [{
-        id: Buffer.from(user.credential_id, 'base64'),
-        type: 'public-key'
-      }],
-      userVerification: 'preferred'
+      allowCredentials: [
+        {
+          id: Buffer.from(user.credential_id, 'base64'),
+          type: 'public-key'
+        }
+      ],
+      userVerification: 'preferred',
+      timeout: 60000
     });
 
-    // guardar challenge
+    // 🔥 guardar challenge
     await pool.query(
       'UPDATE usuarios SET current_challenge = ? WHERE id = ?',
       [options.challenge, user.id]
     );
 
+    console.log('🔐 Challenge login generado para:', user.id);
+
     res.json(options);
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error en login biométrico' });
+    console.error('Error en generateAuthentication:', error);
+
+    res.status(500).json({
+      error: 'Error en login biométrico'
+    });
   }
 };
 

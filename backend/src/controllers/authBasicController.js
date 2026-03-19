@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 // REGISTRO
 export const register = async (req, res) => {
   try {
+    await pool.query('SELECT 1');
     const { nombre, email, password } = req.body;
 
     if (!nombre || !email || !password) {
@@ -38,6 +39,7 @@ export const register = async (req, res) => {
 // LOGIN
 export const login = async (req, res) => {
   try {
+    await pool.query('SELECT 1');
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -84,6 +86,7 @@ export const login = async (req, res) => {
 // LISTAR USUARIOS (solo admin)
 export const getUsers = async (req, res) => {
   try {
+    await pool.query('SELECT 1');
     const [users] = await pool.query('SELECT id, nombre, email, created_at FROM usuarios');
     res.status(200).json(users);
   } catch (error) {
