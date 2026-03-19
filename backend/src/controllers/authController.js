@@ -148,7 +148,7 @@ export const loginOptions = async (req, res) => {
 // ============================================
 import { verifyRegistrationResponse } from '@simplewebauthn/server';
 
-const verifyRegistration = async (req, res) => {
+export const verifyRegistration = async (req, res) => {
   try {
     // 1. Recibir datos del frontend
     const { email, attestationResponse } = req.body;
@@ -222,8 +222,3 @@ const verifyRegistration = async (req, res) => {
   }
 };
 
-export { 
-  registerOptions, 
-  loginOptions, 
-  verifyRegistration
-};
