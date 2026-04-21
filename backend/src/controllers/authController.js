@@ -11,7 +11,7 @@ const mockUser = {
 };
 export const verifyLogin = async (req, res) => {
   try {
-    const { email, assertionResponse } = req.body;
+    const { email, credential: assertionResponse } = req.body;
 
     console.log('Verificando login biométrico para:', email);
 

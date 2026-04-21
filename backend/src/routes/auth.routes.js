@@ -18,7 +18,7 @@ router.post('/register/options', registerOptions);
 router.post('/register/verify', verifyRegistration);
 
 // 🔐 LOGIN
-router.post('/login/options', loginOptions);
-router.post('/login/finish', verifyLogin);
+router.post('/login/begin', loginOptions);  
+router.post('/login/complete', verifyLogin); 
 
 export default router;
