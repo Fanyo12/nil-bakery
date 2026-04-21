@@ -50,28 +50,43 @@ const [postres, setPostres] = useState([
           <a href="/menu" style={{ textDecoration: 'none', color: '#333', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>MENÚ</a>
           
           {/* 👇 SECCIÓN DE USUARIO - CAMBIA SEGÚN SESIÓN */}
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <span style={{ color: '#b5835a', fontWeight: 'bold' }}>
-                👤 {user.nombre}
-              </span>
-              <button
-                onClick={handleLogout}
-                style={{
-                  padding: '8px 15px',
-                  backgroundColor: '#3b2f2f',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}
-              >
-                CERRAR SESIÓN
-              </button>
-            </div>
+         {user ? (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+    <span style={{ color: '#b5835a', fontWeight: 'bold' }}>
+      👤 {user.nombre}
+    </span>
+
+    {/* 👇 AGREGAR ESTO */}
+    {user.rol === 'admin' && (
+      <a href="/admin" style={{
+        textDecoration: 'none',
+        color: '#b5835a',
+        fontWeight: 'bold',
+        fontSize: '14px',
+        textTransform: 'uppercase',
+        letterSpacing: '1px'
+      }}>
+        Admin
+      </a>
+    )}
+
+    <button
+      onClick={handleLogout}
+      style={{
+        padding: '8px 15px',
+        backgroundColor: '#3b2f2f',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '12px',
+        textTransform: 'uppercase',
+        letterSpacing: '1px'
+      }}
+    >
+      CERRAR SESIÓN
+    </button>
+  </div>
           ) : (
             <a href="/login" style={{
               textDecoration: 'none',
