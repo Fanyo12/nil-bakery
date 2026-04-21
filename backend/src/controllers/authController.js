@@ -54,10 +54,10 @@ export const verifyLogin = async (req, res) => {
 
       // 🔥 GENERAR TOKEN (LO QUE TE FALTA)
       const token = jwt.sign(
-        { id: user.id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
+  { id: user.id, email: user.email, rol: user.rol }, // 👈 agregar rol
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' }
+);
 
       // ✅ RESPUESTA COMPLETA
       return res.json({
@@ -65,9 +65,12 @@ export const verifyLogin = async (req, res) => {
         message: 'Login biométrico exitoso 🔐',
         token,
         usuario: {
-          id: user.id,
-          email: user.email
-        }
+  id: user.id,
+  nombre: user.nombre, // 👈 también faltaba nombre
+  email: user.email,
+  rol: user.rol         // 👈 agregar rol
+}
+        
       });
 
     } else {
