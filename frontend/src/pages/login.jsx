@@ -176,9 +176,10 @@ export default function Login() {
               onChange={(e) => {
                 setEmail(e.target.value);
                 // Pre-calentar el backend
-                if (e.target.value.includes('@')) {
-                  fetch(`${BACKEND_URL}/api/webauthn/login/begin`, { method: 'POST' }).catch(() => {});
-                }
+              if (e.target.value.includes('@')) {
+                fetch(`${BACKEND_URL}/api/webauthn/login/begin`, { method: 'POST' }).catch(() => {});
+              }
+
               }}
               required
               style={inputStyle}
