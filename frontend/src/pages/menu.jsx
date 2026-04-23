@@ -14,7 +14,7 @@ export default function Menu({ agregarAlCarrito }) {
       try {
         // 👇 IMPORTANTE: Asegúrate de que esta URL coincida con la ruta de tu backend
         // Si tu ruta es diferente (ej. /productos en vez de /api/productos), cámbiala aquí.
-        const response = await fetch("https://nil-bakery.onrender.com/api/productos");
+        const response = await fetch("https://nil-bakery.onrender.com/api/products");
         const data = await response.json();
 
         // En tu controlador envías { message: '...', data: [...] }
