@@ -46,19 +46,21 @@ export default function PanelUsuario() {
           <p>Aún no tienes pedidos.</p>
         ) : (
           pedidos.map((p) => (
-            <div className="pedido-item" key={p.id}>
-              <div>
-                <div className="pedido-item__id">#{p.id.toString().padStart(4, '0')} · {new Date(p.fecha).toLocaleDateString()}</div>
-                {/* Aquí mostramos la lista de productos que viene de detalle_pedidos */}
-                <div className="pedido-item__products">{p.productos.join(', ')}</div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <span className="pedido-item__price">${p.total}</span>
-                <span className={`pedido-badge pedido-badge--${p.estado}`}>
-                  {estadoLabel[p.estado]}
-                </span>
+          <div className="pedido-item" key={p.id}>
+            <div>
+              <div className="pedido-item__id">#{p.id} · {new Date(p.fecha).toLocaleDateString()}</div>
+              {/* 👇 IMPORTANTE: Usamos 'detalles' que es lo que manda el PHP ahora */}
+              <div className="pedido-item__products">
+                {Array.isArray(p.detalles) ? p.detalles.join(', ') : p.productos || 'Ver detalles en sucursal'}
               </div>
             </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <span className="pedido-item__price">${parseFloat(p.total).toFixed(2)}</span>
+              <span className={`pedido-badge pedido-badge--${p.estado}`}>
+                {estadoLabel[p.estado] || 'Pendiente'}
+              </span>
+            </div>
+          </div>
           ))
         )}
       </div>
