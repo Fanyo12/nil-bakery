@@ -1,11 +1,15 @@
-/* ===== PANEL USUARIO ===== */
+/* ===================================================
+   PANEL USUARIO — Nil Bakery
+=================================================== */
+
 .panel-usuario {
   min-height: 85vh;
   background: #faf6f2;
   font-family: sans-serif;
-  padding: 40px 5vw;
+  padding: 120px 5vw 60px;
 }
 
+/* ── Header ── */
 .panel-usuario__header {
   display: flex;
   align-items: center;
@@ -14,21 +18,23 @@
 }
 
 .panel-usuario__avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   background: #3b2f2f;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 30px;
   font-family: 'Georgia', serif;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(59,47,47,0.25);
 }
 
 .panel-usuario__name {
   font-family: 'Georgia', serif;
-  font-size: 26px;
+  font-size: 28px;
   color: #3b2f2f;
   margin: 0 0 4px;
 }
@@ -39,10 +45,11 @@
   margin: 0;
 }
 
+/* ── Grid ── */
 .panel-usuario__grid {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 30px;
+  gap: 28px;
 }
 
 @media (max-width: 768px) {
@@ -51,12 +58,12 @@
   }
 }
 
-/* Tarjetas del panel */
+/* ── Tarjetas ── */
 .panel-card {
   background: white;
-  border-radius: 10px;
-  padding: 28px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border-radius: 14px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
 }
 
 .panel-card__title {
@@ -68,13 +75,13 @@
   border-bottom: 1px solid #f0e8df;
 }
 
-/* Info personal */
+/* ── Info personal ── */
 .panel-info-item {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .panel-info-item__label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: bold;
   color: #b5835a;
   letter-spacing: 1.5px;
@@ -89,17 +96,17 @@
 
 .panel-edit-btn {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 16px;
   background: transparent;
   border: 1px solid #3b2f2f;
   color: #3b2f2f;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 11px;
+  border-radius: 7px;
   cursor: pointer;
   font-size: 13px;
   font-weight: bold;
   letter-spacing: 1px;
-  transition: all 0.3s;
+  transition: all 0.25s;
 }
 
 .panel-edit-btn:hover {
@@ -107,7 +114,7 @@
   color: white;
 }
 
-/* Historial de pedidos */
+/* ── Pedidos ── */
 .pedido-item {
   display: flex;
   justify-content: space-between;
@@ -126,27 +133,30 @@
   font-weight: bold;
   color: #3b2f2f;
   font-size: 14px;
+  margin-bottom: 3px;
 }
 
 .pedido-item__products {
   font-size: 13px;
-  color: #888;
-  margin-top: 3px;
+  color: #999;
 }
 
 .pedido-item__price {
   font-weight: bold;
   color: #b5835a;
-  font-size: 16px;
+  font-size: 17px;
+  white-space: nowrap;
 }
 
+/* ── Badges ── */
 .pedido-badge {
-  padding: 4px 12px;
+  padding: 5px 13px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .pedido-badge--completado {
@@ -164,14 +174,15 @@
   color: #1565c0;
 }
 
+/* ── Estado vacío ── */
 .panel-empty {
   text-align: center;
   color: #bbb;
-  padding: 30px 0;
+  padding: 40px 0;
   font-size: 14px;
 }
 
 .panel-empty__icon {
-  font-size: 40px;
-  margin-bottom: 10px;
+  font-size: 44px;
+  margin-bottom: 12px;
 }
