@@ -48,6 +48,7 @@ const [postres, setPostres] = useState([
         <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
           <a href="/" style={{ textDecoration: 'none', color: '#333', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>INICIO</a>
           <a href="/menu" style={{ textDecoration: 'none', color: '#333', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>MENÚ</a>
+          <a href="/nuestra-historia" style={{ textDecoration: 'none', color: '#333', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>NUESTRA HISTORIA</a>
           
           {/* 👇 SECCIÓN DE USUARIO - CAMBIA SEGÚN SESIÓN */}
          {user ? (
