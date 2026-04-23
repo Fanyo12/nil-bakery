@@ -34,8 +34,6 @@ app.use(
 // Autenticación básica (email + password)
 app.use('/api/auth', authBasicRoutes);
 
-app.use('/api/webauthn', authRoutes);    // 👈 montar authRoutes aquí
-
 app.use('/api/webauthn', webauthnRoutes);
 
 app.use('/api/products', productRoutes);
