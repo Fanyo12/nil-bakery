@@ -1,0 +1,137 @@
+/* ========================================
+   NAVBAR COMPARTIDO — Nil Bakery
+   Usar en: Home, Login, Register, Menu,
+            NuestraHistoria, Carrito
+======================================== */
+
+.navbar-shared {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* Logo */
+.navbar-shared__logo {
+  font-family: serif;
+  font-size: 22px;
+  color: #3b2f2f;
+  margin: 0;
+  font-weight: normal;
+}
+
+.navbar-shared__logo a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Links contenedor */
+.navbar-shared__links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* Links normales */
+.navbar-shared__link {
+  text-decoration: none;
+  color: #333;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+
+.navbar-shared__link:hover {
+  color: #b5835a;
+}
+
+/* Link de usuario */
+.navbar-shared__link--user {
+  color: #b5835a;
+  font-weight: bold;
+}
+
+/* Link de admin */
+.navbar-shared__link--admin {
+  color: #b5835a;
+  font-weight: bold;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  border: 1px solid #b5835a;
+  padding: 5px 12px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.navbar-shared__link--admin:hover {
+  background-color: #b5835a;
+  color: white;
+}
+
+/* Botón cerrar sesión */
+.navbar-shared__btn-logout {
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #3b2f2f;
+  border: 1px solid #3b2f2f;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.navbar-shared__btn-logout:hover {
+  background-color: #3b2f2f;
+  color: white;
+}
+
+/* Botón iniciar sesión */
+.navbar-shared__btn-login {
+  text-decoration: none;
+  color: #fff;
+  background-color: #3b2f2f;
+  padding: 8px 20px;
+  border-radius: 5px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.2s;
+}
+
+.navbar-shared__btn-login:hover {
+  background-color: #5a4040;
+}
+
+/* Botón carrito */
+.navbar-shared__btn-cart {
+  text-decoration: none;
+  color: #333;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s;
+}
+
+.navbar-shared__btn-cart:hover {
+  color: #b5835a;
+}
+
+/* Margen para que el contenido no quede bajo el navbar fijo */
+.navbar-offset {
+  margin-top: 70px;
+}

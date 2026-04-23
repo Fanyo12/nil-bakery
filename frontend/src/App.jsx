@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { Routes, Route } from 'react-router-dom';
+
+// Componentes
+import Navbar from './components/Navbar';
 
 // Páginas
 import Home from './pages/home';
@@ -12,12 +14,11 @@ import NuestraHistoria from './pages/nuestraHistoria';
 import PanelUsuario from './pages/panelUsuario';
 import PanelAdmin from './pages/panelAdmin';
 
-// Estilos del nav
+// Estilos globales
 import './styles/App.css';
 
 function App() {
   const [carrito, setCarrito] = useState([]);
-  const { user, logout } = useAuth();
 
   const agregarAlCarrito = (postre) => {
     setCarrito([...carrito, postre]);
@@ -26,42 +27,8 @@ function App() {
 
   return (
     <>
-      {/* NAVEGACIÓN */}
-      <nav className="navbar">
-        <div className="navbar__logo">
-          <Link to="/">Nil Bakery</Link>
-        </div>
-
-        <div className="navbar__links">
-          <Link to="/" className="navbar__link">Inicio</Link>
-          <Link to="/menu" className="navbar__link">Menú</Link>
-          <Link to="/nuestra-historia" className="navbar__link">Nuestra Historia</Link>
-
-          {user ? (
-            <>
-              <Link to="/mi-cuenta" className="navbar__link navbar__link--user">
-                👤 {user.nombre}
-              </Link>
-              {/* Mostrar panel admin solo si el usuario es admin */}
-              {user.rol === 'admin' && (
-                <Link to="/admin" className="navbar__link">Admin</Link>
-              )}
-              <button
-                onClick={() => { logout(); window.location.href = '/'; }}
-                className="navbar__btn-logout"
-              >
-                Cerrar sesión
-              </button>
-            </>
-          ) : (
-            <Link to="/login" className="navbar__btn-login">Iniciar Sesión</Link>
-          )}
-
-          <Link to="/carrito" className="navbar__btn-cart">
-            🛒 Mi Carrito ({carrito.length})
-          </Link>
-        </div>
-      </nav>
+      {/* 👇 Aquí está tu Navbar con la prop carritoCount que creaste */}
+      <Navbar carritoCount={carrito.length} />
 
       {/* RUTAS */}
       <Routes>

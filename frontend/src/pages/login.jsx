@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 import { loginUser } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import fondoImg from "../assets/fondo 1.jpeg";
+import '../styles/login.css'; // 👈 IMPORTAMOS LOS ESTILOS AQUÍ
 
 const BACKEND_URL = "https://nil-bakery.onrender.com";
 
@@ -61,7 +63,6 @@ export default function Login() {
     setHuellaCargando(true);
 
     try {
-      // Paso A: pedir opciones al backend
       const res = await fetch(`${BACKEND_URL}/api/webauthn/login/begin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,8 +72,6 @@ export default function Login() {
       if (!res.ok) throw new Error("Error al iniciar sesión biométrica.");
 
       const options = await res.json();
-
-      // Paso B: convertir challenge a ArrayBuffer
       options.challenge = base64ToBuffer(options.challenge);
 
       if (options.allowCredentials) {
@@ -82,12 +81,10 @@ export default function Login() {
         }));
       }
 
-      // Paso C: activar biometría del dispositivo
       const cred = await navigator.credentials.get({
         publicKey: options,
       });
 
-      // Paso D: convertir y enviar credential al backend
       const credentialJSON = {
         id: cred.id,
         rawId: bufferToBase64(cred.rawId),
@@ -102,18 +99,18 @@ export default function Login() {
         },
       };
 
-          const completeRes = await fetch(`${BACKEND_URL}/api/webauthn/login/complete`, {
+      const completeRes = await fetch(`${BACKEND_URL}/api/webauthn/login/complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: email,           // 👈 agregar email
-          credential: credentialJSON  // 👈 envolver en credential
+          email: email,
+          credential: credentialJSON
         }),
       });
 
       if (!completeRes.ok) throw new Error("Huella no reconocida.");
 
-          const data = await completeRes.json();
+      const data = await completeRes.json();
       console.log("Login biométrico exitoso:", data);
 
       if (data.token && data.usuario) {
@@ -121,7 +118,6 @@ export default function Login() {
         alert(`¡Bienvenido, ${data.usuario.nombre}! 🖐️✅`);
         navigate('/');
       } else if (data.success) {
-        // Mientras Fanny agrega token y usuario
         alert("Huella verificada ✅ pero el backend no devuelve sesión aún.");
       } else {
         alert("Error al iniciar sesión con huella.");
@@ -137,116 +133,74 @@ export default function Login() {
 
   // ── UI ────────────────────────────────────────────────────────────────
   return (
-    <div style={{
-      minHeight: '85vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${fondoImg})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      padding: '20px'
-    }}>
+    <>
+      <Navbar />
 
-      <div style={{
-        background: 'rgba(255,255,255,0.95)',
-        padding: '40px',
-        borderRadius: '10px',
-        boxShadow: '0 15px 30px rgba(0,0,0,0.2)',
-        width: '100%',
-        maxWidth: '380px',
-        textAlign: 'center',
-        fontFamily: 'sans-serif'
-      }}>
+      <div 
+        className="login-container" 
+        style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${fondoImg})` }}
+      >
+        <div className="login-card">
 
-        <h2 style={{ fontFamily: 'serif', color: '#3b2f2f', fontSize: '32px', marginBottom: '5px', marginTop: '0' }}>
-          Bienvenido
-        </h2>
-        <p style={{ color: '#666', marginBottom: '30px', fontSize: '14px' }}>
-          Ingresa a tu cuenta para continuar
-        </p>
+          <h2 className="login-title">Bienvenido</h2>
+          <p className="login-subtitle">Ingresa a tu cuenta para continuar</p>
 
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div style={{ textAlign: 'left' }}>
-            <label style={labelStyle}>Correo Electrónico</label>
-            <input
-              type="email"
-              placeholder="ejemplo@correo.com"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              required
-              style={inputStyle}
-            />
+          <form onSubmit={handleLogin} className="login-form">
+            <div className="input-group">
+              <label className="input-label">Correo Electrónico</label>
+              <input
+                type="email"
+                placeholder="Valerie@correo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Contraseña</label>
+              <input
+                type="password"
+                placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <button type="submit" className="btn-dark">Entrar</button>
+          </form>
+
+          {/* Separador */}
+          <div className="login-separator">
+            <div className="separator-line" />
+            <span className="separator-text">O</span>
+            <div className="separator-line" />
           </div>
 
-          <div style={{ textAlign: 'left' }}>
-            <label style={labelStyle}>Contraseña</label>
-            <input
-              type="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
+          {/* Botón de huella */}
+          <button
+            onClick={handleLoginHuella}
+            disabled={huellaCargando}
+            className={`btn-dark ${!huellaCargando ? 'btn-huella' : ''}`}
+          >
+            {huellaCargando ? 'Verificando huella...' : '🖐️ Iniciar sesión con huella'}
+          </button>
 
-          <button type="submit" style={btnDarkStyle}>Entrar</button>
-        </form>
+          <p className="hint-text">
+            Ingresa tu correo antes de usar la huella
+          </p>
 
-        {/* Separador */}
-        <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', gap: '10px' }}>
-          <div style={{ flex: 1, height: '1px', background: '#ddd' }} />
-          <span style={{ color: '#999', fontSize: '12px' }}>O</span>
-          <div style={{ flex: 1, height: '1px', background: '#ddd' }} />
+          <p className="signup-text">
+            ¿No tienes cuenta?{' '}
+            <Link to="/registro" className="signup-link">
+              Regístrate aquí
+            </Link>
+          </p>
         </div>
-
-        {/* Botón de huella */}
-        <button
-          onClick={handleLoginHuella}
-          disabled={huellaCargando}
-          style={{
-            ...btnDarkStyle,
-            background: huellaCargando ? '#999' : '#b5835a',
-            cursor: huellaCargando ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {huellaCargando ? 'Verificando huella...' : '🖐️ Iniciar sesión con huella'}
-        </button>
-
-        <p style={{ marginTop: '8px', fontSize: '11px', color: '#999' }}>
-          Ingresa tu correo antes de usar la huella
-        </p>
-
-        <p style={{ marginTop: '15px', fontSize: '13px', color: '#666' }}>
-          ¿No tienes cuenta?{' '}
-          <Link to="/registro" style={{ color: '#b5835a', textDecoration: 'none', fontWeight: 'bold' }}>
-            Regístrate aquí
-          </Link>
-        </p>
       </div>
-    </div>
+    </>
   );
 }
-
-// ── Estilos ────────────────────────────────────────────────────────────
-const labelStyle = {
-  fontWeight: 'bold', fontSize: '12px', color: '#333',
-  textTransform: 'uppercase', letterSpacing: '1px',
-};
-
-const inputStyle = {
-  width: '100%', padding: '12px', marginTop: '8px',
-  borderRadius: '5px', border: '1px solid #ccc',
-  boxSizing: 'border-box', fontFamily: 'sans-serif',
-};
-
-const btnDarkStyle = {
-  padding: '15px', background: '#3b2f2f', color: 'white',
-  border: 'none', borderRadius: '5px', cursor: 'pointer',
-  fontSize: '14px', textTransform: 'uppercase',
-  letterSpacing: '2px', marginTop: '10px', transition: '0.3s',
-  width: '100%',
-};

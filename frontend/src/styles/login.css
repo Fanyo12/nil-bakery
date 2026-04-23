@@ -1,0 +1,137 @@
+/* Login.css */
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  padding: 120px 20px 20px 20px;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.login-title {
+  font-family: serif;
+  color: #3b2f2f;
+  font-size: 32px;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+
+.login-subtitle {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  text-align: left;
+}
+
+.input-label {
+  font-weight: bold;
+  font-size: 12px;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+.btn-dark {
+  padding: 15px;
+  background-color: #3b2f2f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.btn-dark:hover {
+  background-color: #2a2121;
+}
+
+.btn-dark:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.btn-huella {
+  background-color: #b5835a;
+}
+
+.btn-huella:hover:not(:disabled) {
+  background-color: #9c6f4a;
+}
+
+.login-separator {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.separator-line {
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.separator-text {
+  color: #999;
+  font-size: 12px;
+}
+
+.hint-text {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #999;
+}
+
+.signup-text {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #666;
+}
+
+.signup-link {
+  color: #b5835a;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
