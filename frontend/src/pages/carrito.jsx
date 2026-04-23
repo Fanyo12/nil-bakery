@@ -46,25 +46,37 @@ export default function Cart({ carrito, setCarrito }) {
     const orderId = 'NIL-' + Math.floor(100000 + Math.random() * 900000);
     const orderDate = new Date().toLocaleString('es-MX');
 
-    // Generar resumen para el correo
+    // ✅ Fix 2: usar nombre correcto del producto
     let resumenTexto = "";
     carrito.forEach(item => {
-      resumenTexto += `• ${item.nombre_pan} - $${parseFloat(item.precio).toFixed(2)}\n`;
+      const nombre = item.nombre || item.nombre_pan || item.name || 'Producto';
+      resumenTexto += `• ${nombre} - $${parseFloat(item.precio).toFixed(2)}\n`;
     });
 
     try {
-      // --- 1. ENVIAR CORREO PRIMERO (Prioridad) ---
+      // ✅ Fix 1: to_email en lugar de customer_email
       await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_NEGOCIO, {
         order_id: orderId,
         customer_name: formData.customerName,
-        customer_email: formData.email,
+        to_email: formData.email,        // 👈 corregido
         customer_phone: formData.phone,
         order_summary: resumenTexto,
         total: total.toFixed(2),
-        date: orderDate
+        order_date: orderDate
       });
 
-      // --- 2. GUARDAR EN HOSTGATOR ---
+      // Correo al cliente
+      await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_CLIENTE, {
+        order_id: orderId,
+        customer_name: formData.customerName,
+        to_email: formData.email,        // 👈 corregido
+        customer_phone: formData.phone,
+        order_summary: resumenTexto,
+        total: total.toFixed(2),
+        order_date: orderDate
+      });
+
+      // Guardar en HostGator
       try {
         await fetch("https://syscunid.com.mx/api/guardar_pedido.php", {
           method: "POST",
@@ -79,7 +91,6 @@ export default function Cart({ carrito, setCarrito }) {
         console.error("Error en BD, pero correo enviado:", dbError);
       }
 
-      // --- 3. MOSTRAR ÉXITO ---
       const whatsappText = `¡Hola! Mi pedido es el ${orderId}. Ya realicé la transferencia de $${total.toFixed(2)}.`;
       const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappText)}`;
 
@@ -121,7 +132,8 @@ export default function Cart({ carrito, setCarrito }) {
                 <div>
                   {carrito.map((item, index) => (
                     <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 0', borderBottom: '1px solid #eee' }}>
-                      <span>{item.nombre_pan}</span>
+                      {/* ✅ Fix 2: nombre correcto */}
+                      <span>{item.nombre || item.nombre_pan || item.name}</span>
                       <span style={{ fontWeight: 'bold' }}>${parseFloat(item.precio).toFixed(2)}</span>
                     </div>
                   ))}
