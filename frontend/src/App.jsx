@@ -37,7 +37,7 @@ function App() {
         <Route path="/nuestra-historia" element={<NuestraHistoria />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
-        <Route path="/carrito" element={<Cart carrito={carrito} />} />
+        <Route path="/carrito" element={<Cart carrito={carrito} setCarrito={setCarrito} />} />
         <Route path="/mi-cuenta" element={<PanelUsuario />} />
         <Route path="/admin" element={<PanelAdmin />} />
       </Routes>
