@@ -56,6 +56,26 @@ export default function Cart({ carrito, setCarrito }) {
         order_id: orderId
       });
 
+      // Dentro de processPayment en carrito.jsx
+        try {
+          // ... (aquí ya tienes lo de EmailJS)
+
+          // NUEVO: Guardar en la base de datos de HostGator
+          await fetch("https://tu-dominio.com/guardar_pedido.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              usuario_id: user.id, // ID del usuario logueado
+              total: total,
+              productos: carrito // Enviamos todo el carrito
+            })
+          });
+
+          // ... (aquí sigue tu modal de éxito)
+        } catch (error) {
+          console.error("Error al guardar pedido:", error);
+        }
+
       const whatsappText = `¡Hola! Mi pedido es el ${orderId}. Ya realicé la transferencia de $${total.toFixed(2)}. Mi nombre es ${formData.customerName}.`;
       const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappText)}`;
 

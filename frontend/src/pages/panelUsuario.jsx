@@ -33,7 +33,10 @@ export default function PanelUsuario() {
   if (!user) return <p>Inicia sesión para continuar.</p>;
 
   return (
-    <div className="panel-usuario">
+        <div className="panel-usuario" style={{ paddingTop: '100px' }}> 
+          {/* El resto de tu código... */}
+        </div>
+      );
       {/* Header y Datos de Usuario (Igual que antes) */}
       
       <div className="panel-card">
@@ -58,6 +61,4 @@ export default function PanelUsuario() {
           ))
         )}
       </div>
-    </div>
-  );
 }
