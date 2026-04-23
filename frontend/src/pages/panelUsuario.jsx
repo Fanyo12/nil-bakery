@@ -19,7 +19,8 @@ export default function PanelUsuario() {
     if (user?.id) {
       try {
         // Pon aquí la URL de donde subiste el archivo en HostGator
-        const response = await fetch(`https://tu-dominio.com/obtener_pedidos.php?usuario_id=${user.id}`);
+        // En PanelUsuario.jsx
+        const response = await fetch(`https://syscunid.com.mx/api/obtener_pedidos.php?usuario_id=${user.id}`);
         const data = await response.json();
         setPedidos(data);
       } catch (error) {
