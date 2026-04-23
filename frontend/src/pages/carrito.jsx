@@ -56,8 +56,8 @@ export default function Cart({ carrito, setCarrito }) {
 
     try {
       // 3. PRIMERO: Guardamos en HostGator para asegurar el registro
-      // Reemplaza 'tu-dominio.com' por tu URL real de HostGator
-      await fetch("https://tu-dominio.com/guardar_pedido.php", {
+      // Reemplaza 'tu-dominio.com' px  or tu URL real de HostGator
+      await fetch("https://syscunid.com.mx/api/guardar_pedido.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
