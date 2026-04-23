@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 
-// Configuración de EmailJS (Mantenemos tus claves)
+// Configuración de EmailJS
 const EMAILJS_CONFIG = {
   PUBLIC_KEY: 'Qk-Fnl9FrLEiRolBh',
   SERVICE_ID: 'service_in3a5ri',
@@ -17,39 +17,36 @@ export default function Cart({ carrito, setCarrito }) {
   const [formData, setFormData] = useState({ customerName: '', email: '', phone: '', notes: '' });
   const [isLoading, setIsLoading] = useState(false);
   
-  // Estado para manejar la ventana emergente (Modal)
   const [modal, setModal] = useState({ show: false, type: 'success', title: '', message: '', orderId: '', total: '', whatsappLink: '' });
 
-  // Inicializar EmailJS al cargar la página
   useEffect(() => {
     emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
   }, []);
 
-  // Calcular el total
-  const total = carrito.reduce((suma, postre) => suma + Number(postre.precio), 0);
+  // 👇 AQUÍ ESTÁ LA CORRECCIÓN: Usamos parseFloat para forzar la suma matemática
+  const total = carrito.reduce((suma, postre) => {
+    const precio = parseFloat(postre.precio) || 0;
+    return suma + precio;
+  }, 0);
 
-  // Manejar lo que el usuario escribe
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  // Cerrar el modal y redirigir si fue éxito
   const closeModal = () => {
     setModal({ ...modal, show: false });
     if (modal.type === 'success') {
-      if (setCarrito) setCarrito([]); // Vaciamos el carrito
-      navigate('/'); // Lo mandamos al inicio
+      if (setCarrito) setCarrito([]); 
+      navigate('/'); 
     }
   };
 
-  // Procesar el Pago y Enviar Correos
   const processPayment = async (e) => {
     e.preventDefault();
     if (carrito.length === 0) return;
 
     const { customerName, email, phone, notes } = formData;
 
-    // Validación de correo
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setModal({ show: true, type: 'error', title: 'Correo inválido', message: 'Por favor ingresa un correo electrónico válido.' });
@@ -59,26 +56,23 @@ export default function Cart({ carrito, setCarrito }) {
     const orderDate = new Date().toLocaleString('es-MX', { dateStyle: 'full', timeStyle: 'short' });
     const orderId = 'NIL-' + Date.now().toString().slice(-8);
 
-    // 1. Resumen para ti (Negocio)
     let businessSummary = `═══════════════════════════════\n      🍞 NIL BAKERY 🍞\n═══════════════════════════════\n\n📋 DETALLE DEL PEDIDO:\n\n`;
     carrito.forEach(item => {
-      businessSummary += `• ${item.nombre}\n  Precio: $${Number(item.precio).toFixed(2)}\n\n`;
+      businessSummary += `• ${item.nombre}\n  Precio: $${parseFloat(item.precio).toFixed(2)}\n\n`;
     });
     businessSummary += `───────────────────────────────\n💰 TOTAL: $${total.toFixed(2)} MXN\n───────────────────────────────\n\n🆔 ID Pedido: ${orderId}\n👤 Cliente: ${customerName}\n📧 Email: ${email}\n📞 Teléfono: ${phone}\n`;
     if (notes) businessSummary += `📝 Notas: ${notes}\n`;
     businessSummary += '\n⚠️ Pendiente de comprobante de pago por WhatsApp';
 
-    // 2. Resumen para el Cliente
     let clientSummary = '';
     carrito.forEach(item => {
-      clientSummary += `• ${item.nombre} - $${Number(item.precio).toFixed(2)}\n`;
+      clientSummary += `• ${item.nombre} - $${parseFloat(item.precio).toFixed(2)}\n`;
     });
     clientSummary += `\n💰 TOTAL: $${total.toFixed(2)} MXN`;
 
     setIsLoading(true);
 
     try {
-      // Enviar correo a Nil Bakery
       await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_NEGOCIO, {
         to_name: 'Nil Bakery Admin',
         order_summary: businessSummary,
@@ -86,7 +80,6 @@ export default function Cart({ carrito, setCarrito }) {
         order_date: orderDate
       });
 
-      // Enviar correo al Cliente
       await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_CLIENTE, {
         to_email: email,
         customer_name: customerName,
@@ -98,12 +91,10 @@ export default function Cart({ carrito, setCarrito }) {
         total: total.toFixed(2)
       });
 
-      // Generar link de WhatsApp
       const whatsappText = `Hola, quiero enviar mi comprobante de pago para el pedido: ${orderId}\n\n📋 NOMBRE: ${customerName}\n📞 TELÉFONO: ${phone}\n💰 TOTAL: $${total.toFixed(2)}\n🆔 PEDIDO: ${orderId}`;
       const encodedWhatsapp = encodeURIComponent(whatsappText);
       const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedWhatsapp}`;
 
-      // Mostrar modal de éxito
       setModal({
         show: true,
         type: 'success',
@@ -121,7 +112,6 @@ export default function Cart({ carrito, setCarrito }) {
     }
   };
 
-  // UI del Carrito
   return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
       
@@ -139,7 +129,6 @@ export default function Cart({ carrito, setCarrito }) {
             </p>
           ) : (
             <div>
-              {/* Lista de productos (Siempre visible) */}
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 {carrito.map((postre, index) => (
                   <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #f0f0f0' }}>
@@ -149,12 +138,12 @@ export default function Cart({ carrito, setCarrito }) {
                       )}
                       <span style={{ fontSize: '16px', color: '#333', fontWeight: 'bold' }}>{postre.nombre}</span>
                     </div>
-                    <span style={{ fontSize: '18px', color: '#b5835a', fontWeight: 'bold' }}>${Number(postre.precio).toFixed(2)}</span>
+                    {/* 👇 AQUÍ TAMBIÉN FORZAMOS EL FORMATO CORRECTO */}
+                    <span style={{ fontSize: '18px', color: '#b5835a', fontWeight: 'bold' }}>${parseFloat(postre.precio).toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
 
-              {/* Si NO estamos en la fase de pago, mostramos el botón de proceder */}
               {!mostrarPago ? (
                 <div style={{ marginTop: '30px', textAlign: 'right' }}>
                   <h3 style={{ fontSize: '24px', color: '#333', fontFamily: 'serif' }}>Total: <span style={{ color: '#d63384' }}>${total.toFixed(2)}</span></h3>
@@ -166,13 +155,11 @@ export default function Cart({ carrito, setCarrito }) {
                   </button>
                 </div>
               ) : (
-                /* Si SÍ estamos en fase de pago, mostramos el formulario que me pasaste */
                 <div style={{ marginTop: '40px', borderTop: '1px solid #eee', paddingTop: '30px' }}>
                   <h3 style={{ fontFamily: 'serif', color: '#3b2f2f', fontSize: '24px', marginBottom: '20px' }}>
                     🏦 Finalizar Compra
                   </h3>
                   
-                  {/* Datos Bancarios Falsos (puedes editarlos) */}
                   <div style={{ background: '#fef5e8', borderRadius: '10px', padding: '20px', marginBottom: '25px', border: '1px solid #e6d5b8' }}>
                     <h4 style={{ margin: '0 0 10px 0', color: '#b87c4f' }}>💰 Datos para transferencia</h4>
                     <p style={{ margin: '5px 0', fontSize: '14px', color: '#333' }}>Banco: <strong>BBVA</strong></p>
@@ -208,7 +195,7 @@ export default function Cart({ carrito, setCarrito }) {
         </div>
       </div>
 
-      {/* Ventana Emergente (Modal) */}
+      {/* Ventana Emergente */}
       {modal.show && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ background: 'white', padding: '40px', borderRadius: '10px', maxWidth: '500px', width: '90%', textAlign: 'center', fontFamily: 'sans-serif' }}>
@@ -248,7 +235,6 @@ export default function Cart({ carrito, setCarrito }) {
           </div>
         </div>
       )}
-
     </div>
   );
 }
