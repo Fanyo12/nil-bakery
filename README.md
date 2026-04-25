@@ -57,7 +57,7 @@ Endpoints disponibles:
 
 - Backend en producción: https://nil-bakery.onrender.com  
 - Repositorio GitHub: https://github.com/Fanyo12/nil-bakery  
-- Frontend: (en desarrollo)
+- Frontend: https://nil-bakery-1.onrender.com/
 
 ---
 
