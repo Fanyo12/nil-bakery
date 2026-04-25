@@ -217,3 +217,116 @@
 .admin-badge--pendiente { background: #fff3e0; color: #e65100; }
 .admin-badge--completado { background: #e8f5e9; color: #2e7d32; }
 .admin-badge--en-camino { background: #e3f2fd; color: #1565c0; }
+
+/* ── Modal Producto ── */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.admin-modal {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.admin-modal__title {
+  font-family: 'Georgia', serif;
+  font-size: 20px;
+  color: #3b2f2f;
+  margin: 0 0 24px;
+}
+
+.admin-modal__grid {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-modal__input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border 0.2s;
+}
+
+.admin-modal__input:focus {
+  outline: none;
+  border-color: #b5835a;
+}
+
+.admin-modal__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+.admin-modal__btn-cancel {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  background: none;
+  font-size: 13px;
+  color: #666;
+  transition: background 0.2s;
+}
+
+.admin-modal__btn-cancel:hover {
+  background: #f5f0eb;
+}
+
+.admin-modal__btn-save {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #3b2f2f;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.admin-modal__btn-save:hover {
+  background: #5a4040;
+}
+
+/* ── Select de estado en pedidos ── */
+.admin-estado-select {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 12px;
+  cursor: pointer;
+  background: white;
+  color: #555;
+  transition: border 0.2s;
+}
+
+.admin-estado-select:focus {
+  outline: none;
+  border-color: #b5835a;
+}
+
+/* ── Cargando ── */
+.admin-cargando {
+  color: #999;
+  padding: 30px;
+  text-align: center;
+  font-size: 14px;
+}
