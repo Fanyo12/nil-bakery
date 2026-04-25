@@ -4,6 +4,7 @@ import authRoutes from './routes/auth.routes.js';
 import authBasicRoutes from './routes/authBasicRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import pool from './config/db.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 import webauthnRoutes from './routes/webauthnRoutes.js';
@@ -30,6 +31,7 @@ app.use(
 /* ============================
    RUTAS
 ============================ */
+app.use('/api/admin', adminRoutes);
 
 // Autenticación básica (email + password)
 app.use('/api/auth', authBasicRoutes);
@@ -37,6 +39,8 @@ app.use('/api/auth', authBasicRoutes);
 app.use('/api/webauthn', webauthnRoutes);
 
 app.use('/api/products', productRoutes);
+
+
 /* ============================
    RUTA BASE
 ============================ */
