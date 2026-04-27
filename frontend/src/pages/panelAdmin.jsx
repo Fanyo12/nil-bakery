@@ -5,11 +5,13 @@ import '../styles/panelAdmin.css';
 
 const API = 'https://nil-bakery.onrender.com/api';
 
+// ✅ CAMBIO 1: Se agregó 'ganancias' como nueva sección en el sidebar
 const navItems = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard' },
   { id: 'productos', icon: '🍞', label: 'Productos' },
   { id: 'pedidos', icon: '📦', label: 'Pedidos' },
   { id: 'usuarios', icon: '👥', label: 'Usuarios' },
+  { id: 'ganancias', icon: '💰', label: 'Ganancias' }, // ← NUEVO
 ];
 
 const estadoOpciones = ['pendiente', 'en-camino', 'completado'];
@@ -49,7 +51,8 @@ export default function PanelAdmin() {
           const json = await res.json();
           setProductos(json.data || []);
         }
-        if (seccion === 'pedidos' || seccion === 'dashboard') {
+        if (seccion === 'pedidos' || seccion === 'dashboard' || seccion === 'ganancias') {
+          // ✅ CAMBIO 2: Se agregó 'ganancias' para que también cargue los pedidos al entrar a esa sección
           const res = await fetch(`${API}/admin/pedidos`);
           const json = await res.json();
           setPedidos(json.data || []);
@@ -121,11 +124,43 @@ export default function PanelAdmin() {
     }
   };
 
+  // ✅ CAMBIO 3: ventasHoy ahora filtra TAMBIÉN por estado 'completado',
+  // antes solo filtraba por fecha y sumaba pedidos sin importar su estado.
   const ventasHoy = pedidos
-    .filter(p => new Date(p.fecha).toDateString() === new Date().toDateString())
+    .filter(p =>
+      new Date(p.fecha).toDateString() === new Date().toDateString() &&
+      p.estado === 'completado' // ← NUEVO filtro
+    )
     .reduce((sum, p) => sum + parseFloat(p.total), 0);
 
   const pedidosActivos = pedidos.filter(p => p.estado === 'pendiente' || p.estado === 'en-camino').length;
+
+  // ✅ CAMBIO 4: Nuevas variables para la sección de Ganancias
+  // Total acumulado de todos los pedidos completados (sin importar fecha)
+  const ventasTotales = pedidos
+    .filter(p => p.estado === 'completado')
+    .reduce((sum, p) => sum + parseFloat(p.total), 0);
+
+  const pedidosCompletados = pedidos.filter(p => p.estado === 'completado');
+
+  // Promedio de ingreso por pedido completado
+  const promedioPorPedido = pedidosCompletados.length > 0
+    ? ventasTotales / pedidosCompletados.length
+    : 0;
+
+  // Agrupar ventas completadas por fecha para la gráfica de barras
+  const ventasPorDia = pedidosCompletados.reduce((acc, p) => {
+    const fecha = new Date(p.fecha).toLocaleDateString('es-MX');
+    acc[fecha] = (acc[fecha] || 0) + parseFloat(p.total);
+    return acc;
+  }, {});
+
+  // Ordenar las fechas de más antigua a más reciente
+  const diasGrafica = Object.entries(ventasPorDia).sort(
+    (a, b) => new Date(a[0].split('/').reverse().join('-')) - new Date(b[0].split('/').reverse().join('-'))
+  );
+
+  const maxVenta = Math.max(...diasGrafica.map(([, v]) => v), 1);
 
   return (
     <div className="panel-admin">
@@ -171,6 +206,7 @@ export default function PanelAdmin() {
           <>
             <div className="admin-stats">
               <div className="admin-stat-card">
+                {/* ✅ CAMBIO 5: El valor ahora es correcto porque ventasHoy ya filtra por completado */}
                 <div className="admin-stat-card__value">${ventasHoy.toFixed(0)}</div>
                 <div className="admin-stat-card__label">Ventas hoy</div>
               </div>
@@ -299,6 +335,141 @@ export default function PanelAdmin() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* ── GANANCIAS ── */}
+        {/* ✅ CAMBIO 6: Sección completamente nueva con tarjetas de resumen y gráfica de barras */}
+        {seccion === 'ganancias' && !cargando && (
+          <div>
+            {/* Tarjetas de resumen financiero */}
+            <div className="admin-stats">
+              <div className="admin-stat-card">
+                {/* Total de ingresos de todos los pedidos completados */}
+                <div className="admin-stat-card__value" style={{ color: '#b5835a' }}>
+                  ${ventasTotales.toFixed(2)}
+                </div>
+                <div className="admin-stat-card__label">Ingresos totales</div>
+              </div>
+              <div className="admin-stat-card">
+                {/* Cantidad de pedidos que ya están en estado completado */}
+                <div className="admin-stat-card__value">{pedidosCompletados.length}</div>
+                <div className="admin-stat-card__label">Pedidos completados</div>
+              </div>
+              <div className="admin-stat-card">
+                {/* Cuánto genera en promedio cada pedido completado */}
+                <div className="admin-stat-card__value">${promedioPorPedido.toFixed(2)}</div>
+                <div className="admin-stat-card__label">Ticket promedio</div>
+              </div>
+              <div className="admin-stat-card">
+                {/* Ventas completadas del día actual */}
+                <div className="admin-stat-card__value">${ventasHoy.toFixed(2)}</div>
+                <div className="admin-stat-card__label">Ventas hoy</div>
+              </div>
+            </div>
+
+            {/* Gráfica de barras: ventas agrupadas por día */}
+            <div className="admin-table-card">
+              <div className="admin-table-header">
+                <h3 className="admin-table-title">📈 Ventas por Día</h3>
+                <span style={{ fontSize: '12px', color: '#999' }}>Solo pedidos completados</span>
+              </div>
+
+              {diasGrafica.length === 0 ? (
+                <p style={{ textAlign: 'center', color: '#999', padding: '40px' }}>
+                  No hay ventas completadas aún.
+                </p>
+              ) : (
+                <div style={{ padding: '20px 16px' }}>
+
+                  {/* Contenedor de barras */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    gap: '12px',
+                    height: '200px',
+                    borderBottom: '2px solid #eee',
+                    borderLeft: '2px solid #eee',
+                    paddingBottom: '8px',
+                    paddingLeft: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    {diasGrafica.map(([fecha, total]) => {
+                      // Altura proporcional al valor máximo, mínimo 10px para que sea visible
+                      const altura = Math.max((total / maxVenta) * 175, 10);
+                      return (
+                        <div
+                          key={fecha}
+                          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}
+                        >
+                          {/* Monto encima de la barra */}
+                          <span style={{ fontSize: '11px', color: '#b5835a', fontWeight: '700' }}>
+                            ${total.toFixed(0)}
+                          </span>
+                          {/* Barra con degradado de la paleta del sitio */}
+                          <div
+                            title={`${fecha}: $${total.toFixed(2)}`}
+                            style={{
+                              width: '100%',
+                              minWidth: '32px',
+                              height: `${altura}px`,
+                              background: 'linear-gradient(to top, #3b2f2f, #b5835a)',
+                              borderRadius: '6px 6px 0 0',
+                              transition: 'height 0.4s ease',
+                              cursor: 'default',
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Etiquetas de fecha debajo de cada barra */}
+                  <div style={{ display: 'flex', gap: '12px', paddingLeft: '8px' }}>
+                    {diasGrafica.map(([fecha]) => (
+                      <div
+                        key={fecha}
+                        style={{ flex: 1, textAlign: 'center', fontSize: '10px', color: '#999', minWidth: '32px' }}
+                      >
+                        {fecha}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Tabla de detalle debajo de la gráfica */}
+                  <table className="admin-table" style={{ marginTop: '32px' }}>
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Pedidos completados</th>
+                        <th>Total del día</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {diasGrafica.map(([fecha, total]) => {
+                        // Contar cuántos pedidos hubo ese día
+                        const cantDia = pedidosCompletados.filter(
+                          p => new Date(p.fecha).toLocaleDateString('es-MX') === fecha
+                        ).length;
+                        return (
+                          <tr key={fecha}>
+                            <td>{fecha}</td>
+                            <td>{cantDia}</td>
+                            <td style={{ color: '#b5835a', fontWeight: '700' }}>${total.toFixed(2)}</td>
+                          </tr>
+                        );
+                      })}
+                      {/* Fila de totales al final de la tabla */}
+                      <tr style={{ borderTop: '2px solid #eee', fontWeight: '700' }}>
+                        <td>Total general</td>
+                        <td>{pedidosCompletados.length}</td>
+                        <td style={{ color: '#b5835a' }}>${ventasTotales.toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </main>

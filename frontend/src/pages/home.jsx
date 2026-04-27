@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Navbar from '../components/Navbar'; // 👈 IMPORTA TU NUEVO COMPONENTE (Ajusta la ruta si es necesario)
 import fondoImg from "../assets/fondo 3.jpeg";
 import imgCupcake from "../assets/cup cakes.jpeg";
 import imgGalletas from "../assets/galletas de fresa.jpeg";
@@ -19,8 +18,6 @@ export default function Home({ agregarAlCarrito }) {
   return (
     <div style={{ fontFamily: 'sans-serif', margin: '0', padding: '0' }}>
       
-      {/* 👇 TU NAVBAR REUTILIZABLE */}
-      <Navbar />
 
       {/* SECCIÓN HERO */}
       <div style={{ 
