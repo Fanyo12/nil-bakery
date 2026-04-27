@@ -43,49 +43,57 @@ export default function PanelAdmin() {
   }
 
 useEffect(() => {
-  const cargar = async () => {
-    setCargando(true);
-    try {
-      // 1. Obtenemos el token (Asegúrate de que así se llame en tu localStorage)
-      const token = localStorage.getItem('token'); 
-      
-      // 2. Configuramos las credenciales
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Aquí va la llave de acceso
-        }
-      };
+    const cargar = async () => {
+      setCargando(true);
+      try {
+        // 1. Buscamos el token. A veces está en localStorage, a veces dentro del usuario
+        const token = localStorage.getItem('token') || (user && user.token);
+        
+        // 🔴 DEBUG: Esto imprimirá en tu consola qué token estamos enviando
+        console.log("Token enviado al backend:", token);
 
-      if (seccion === 'productos' || seccion === 'dashboard') {
-        // Los productos suelen ser públicos, pero si los proteges, agrégale el config
-        const res = await fetch(`${API}/products`); 
-        const json = await res.json();
-        setProductos(json.data || []);
+        // Si el token es null, el backend nos va a rechazar (Error 401)
+        if (!token) {
+          console.error("¡ALERTA! No se encontró el token. El backend rechazará la petición.");
+        }
+
+        // 2. Preparamos las credenciales
+        const config = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        };
+
+        if (seccion === 'productos' || seccion === 'dashboard') {
+          const res = await fetch(`${API}/products`);
+          const json = await res.json();
+          setProductos(json.data || []);
+        }
+        
+        if (seccion === 'pedidos' || seccion === 'dashboard' || seccion === 'ganancias') {
+          const res = await fetch(`${API}/admin/pedidos`, config);
+          
+          // 🔴 DEBUG: Revisamos qué responde el servidor
+          if (!res.ok) console.error("Error en pedidos:", res.status);
+          
+          const json = await res.json();
+          setPedidos(json.data || []);
+        }
+        
+        if (seccion === 'usuarios') {
+          const res = await fetch(`${API}/admin/usuarios`, config);
+          const json = await res.json();
+          setUsuarios(json.data || []);
+        }
+      } catch (error) {
+        console.error('Error cargando datos:', error);
+      } finally {
+        setCargando(false);
       }
-      
-      if (seccion === 'pedidos' || seccion === 'dashboard' || seccion === 'ganancias') {
-        // 3. Enviamos el config en la petición protegida
-        const res = await fetch(`${API}/admin/pedidos`, config);
-        const json = await res.json();
-        setPedidos(json.data || []);
-      }
-      
-      if (seccion === 'usuarios') {
-        // 3. Enviamos el config en la petición protegida
-        const res = await fetch(`${API}/admin/usuarios`, config);
-        const json = await res.json();
-        setUsuarios(json.data || []);
-      }
-    } catch (error) {
-      console.error('Error cargando datos:', error);
-    } finally {
-      setCargando(false);
-    }
-  };
-  
-  cargar();
-}, [seccion]);
+    };
+    cargar();
+  }, [seccion, user]); // Agregué 'user' a las dependencias por si el token viene de ahí
 
   const cambiarEstadoPedido = async (id, estado) => {
     try {
