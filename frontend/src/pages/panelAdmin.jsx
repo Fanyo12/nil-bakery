@@ -46,22 +46,29 @@ export default function PanelAdmin() {
     const cargar = async () => {
       setCargando(true);
       try {
-        if (seccion === 'productos' || seccion === 'dashboard') {
-          const res = await fetch(`${API}/products`);
-          const json = await res.json();
-          setProductos(json.data || []);
-        }
+        // 1. Obtenemos el token de donde lo tengas guardado (ej. localStorage)
+        const token = localStorage.getItem('token'); // Ajusta esto si usas otro nombre
+        
+        // 2. Preparamos las "credenciales"
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // 👈 AQUÍ ESTÁ LA LLAVE
+        };
+
         if (seccion === 'pedidos' || seccion === 'dashboard' || seccion === 'ganancias') {
-          // ✅ CAMBIO 2: Se agregó 'ganancias' para que también cargue los pedidos al entrar a esa sección
-          const res = await fetch(`${API}/admin/pedidos`);
+          // 3. Mandamos las credenciales en la petición
+          const res = await fetch(`${API}/admin/pedidos`, { headers });
           const json = await res.json();
           setPedidos(json.data || []);
         }
+        
         if (seccion === 'usuarios') {
-          const res = await fetch(`${API}/admin/usuarios`);
+          const res = await fetch(`${API}/admin/usuarios`, { headers });
           const json = await res.json();
           setUsuarios(json.data || []);
         }
+        // ... haz lo mismo para productos si tu ruta de productos también pide token
+        
       } catch (error) {
         console.error('Error cargando datos:', error);
       } finally {

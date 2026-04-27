@@ -52,22 +52,26 @@ export default function Menu({ agregarAlCarrito }) {
             
         {/* Recorremos los productos que llegaron de la base de datos */}
         {postres.map((postre) => (
-          <div key={postre.id} style={{ border: '1px solid #eee', padding: '25px', width: '220px', textAlign: 'center', backgroundColor: 'white', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+          <div key={postre.id} style={{ 
+            display: 'flex',          // 👈 NUEVO: Convertimos la tarjeta en flexbox
+            flexDirection: 'column',  // 👈 NUEVO: Ordenamos de arriba hacia abajo
+            border: '1px solid #eee', 
+            padding: '25px', 
+            width: '220px', 
+            textAlign: 'center', 
+            backgroundColor: 'white', 
+            boxShadow: '0 10px 30px rgba(0,0,0,0.05)' 
+          }}>
             
-            {/* ✅ CAMBIO AQUÍ: 
-                Si 'postre.imagen' trae el nombre del archivo (ej: "pan.jpg"), 
-                lo buscamos en tu carpeta de assets. Si falla, usa imgDefault.
-            */}
             <img 
               src={postre.imagen ? `/productos/${postre.imagen}` : imgDefault} 
               alt={postre.nombre} 
               style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px' }} 
               onError={(e) => {
-                // Si ya intentó poner la imagen por defecto, no lo vuelve a intentar
                 if (e.target.src.includes(imgDefault)) {
-                  e.target.src = "https://placehold.co/400x300?text=Foto+no+disponible"; // Salvavidas de internet
+                  e.target.src = "https://placehold.co/400x300?text=Foto+no+disponible";
                 } else {
-                  e.target.src = imgDefault; // Primer intento de salvavidas
+                  e.target.src = imgDefault;
                 }
               }}
             />
@@ -75,24 +79,28 @@ export default function Menu({ agregarAlCarrito }) {
             <h3 style={{ fontSize: '18px', margin: '15px 0', color: '#333', fontFamily: 'serif' }}>
               {postre.nombre}
             </h3>
-                
-                {/* Agregamos la descripción que viene de tu DB */}
-                <p style={{ fontSize: '12px', color: '#777', height: '40px', overflow: 'hidden' }}>
-                  {postre.descripcion}
-                </p>
+            
+            {/* 👈 NUEVO: flexGrow: 1 hace que este texto ocupe el espacio sobrante, empujando el botón hacia abajo */}
+            <p style={{ fontSize: '12px', color: '#777', flexGrow: 1, marginBottom: '15px' }}>
+              {postre.descripcion}
+            </p>
 
-                <p style={{ color: '#b5835a', fontSize: '20px', margin: '10px 0', fontWeight: 'bold' }}>
-                  ${Number(postre.precio).toFixed(2)}
-                </p>
-                
-                <button 
-                  onClick={() => agregarAlCarrito(postre)} 
-                  style={{ width: '100%', padding: '12px', background: '#3b2f2f', color: 'white', border: 'none', cursor: 'pointer', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '15px', transition: '0.3s' }}
-                >
-                  Añadir al Carrito
-                </button>
-              </div>
-            ))}
+            {/* 👈 NUEVO: Agrupamos el precio y el botón, y con marginTop: 'auto' los pegamos al fondo */}
+            <div style={{ marginTop: 'auto' }}>
+              <p style={{ color: '#b5835a', fontSize: '20px', margin: '0 0 10px 0', fontWeight: 'bold' }}>
+                ${Number(postre.precio).toFixed(2)}
+              </p>
+              
+              <button 
+                onClick={() => agregarAlCarrito(postre)} 
+                style={{ width: '100%', padding: '12px', background: '#3b2f2f', color: 'white', border: 'none', cursor: 'pointer', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px', transition: '0.3s' }}
+              >
+                Añadir al Carrito
+              </button>
+            </div>
+            
+          </div>
+        ))}
 
             {postres.length === 0 && !cargando && (
               <p style={{ textAlign: 'center', color: '#999' }}>Aún no hay productos en el menú.</p>
