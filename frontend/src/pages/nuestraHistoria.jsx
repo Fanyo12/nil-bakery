@@ -4,37 +4,17 @@ import fondoImg from "../assets/fondo 1.jpeg";
 
 const timeline = [
   {
-    year: '2018',
-    title: 'El Inicio',
-    text: 'Nil Bakery nació en una pequeña cocina familiar con una sola receta de pan de masa madre y el sueño de compartir el verdadero sabor artesanal con nuestra comunidad.'
-  },
-  {
-    year: '2019',
-    title: 'Primer Local',
-    text: 'Abrimos nuestras puertas en el corazón de la ciudad. La respuesta fue increíble — las filas llegaban a la calle desde el primer día.'
-  },
-  {
-    year: '2021',
-    title: 'Expansión del Menú',
-    text: 'Incorporamos repostería fina, cafés de especialidad y temporadas especiales. Cada producto siguió siendo elaborado a mano, sin excepción.'
-  },
-  {
-    year: '2023',
-    title: 'Comunidad & Talleres',
-    text: 'Lanzamos talleres de panadería para la comunidad. Más de 300 personas han aprendido el arte del pan artesanal con nosotros.'
-  },
-  {
-    year: '2024',
+    year: '2026',
     title: 'Nil Bakery en Línea',
     text: 'Para llevar nuestros productos a más hogares, lanzamos nuestra tienda en línea. El mismo amor de siempre, ahora a tu puerta.'
   },
 ];
 
 const valores = [
-  { icon: '🌾', title: 'Ingredientes Naturales', text: 'Solo usamos harinas sin aditivos, mantequillas reales y endulzantes naturales.' },
-  { icon: '⏱️', title: 'Sin Prisa', text: 'Nuestras masas fermentan entre 12 y 48 horas. El tiempo es nuestro ingrediente secreto.' },
-  { icon: '🤝', title: 'Comunidad Local', text: 'Compramos a productores locales y participamos activamente en nuestra comunidad.' },
-  { icon: '💛', title: 'Hecho con Amor', text: 'Cada pieza pasa por nuestras manos. Nunca delegamos la calidad a una máquina.' },
+  { icon: '', title: 'Ingredientes Naturales', text: 'Solo usamos harinas sin aditivos, mantequillas reales y endulzantes naturales.' },
+  { icon: '', title: 'Sin Prisa', text: 'Nuestras masas fermentan entre 12 y 48 horas. El tiempo es nuestro ingrediente secreto.' },
+  { icon: '', title: 'Comunidad Local', text: 'Compramos a productores locales y participamos activamente en nuestra comunidad.' },
+  { icon: '', title: 'Hecho con Amor', text: 'Cada pieza pasa por nuestras manos. Nunca delegamos la calidad a una máquina.' },
 ];
 
 export default function NuestraHistoria() {

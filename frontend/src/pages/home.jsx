@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 👈 1. AGREGA ESTE IMPORT
+
 import fondoImg from "../assets/fondo 3.jpeg";
 import imgCupcake from "../assets/cup cakes.jpeg";
 import imgGalletas from "../assets/galletas de fresa.jpeg";
@@ -7,6 +9,8 @@ import imgPastel from "../assets/pastel de chocolate.jpeg";
 import imgPay from "../assets/pay de fresa.jpeg";
 
 export default function Home({ agregarAlCarrito }) {
+  const navigate = useNavigate(); // 👈 2. MUÉVELO AQUÍ ADENTRO
+
   const [postres, setPostres] = useState([
     { id: 1, nombre: 'Pastel de Chocolate', precio: 250, imagen: imgPastel },
     { id: 2, nombre: 'Cheesecake de Fresa', precio: 180, imagen: imgPay },
@@ -47,13 +51,20 @@ export default function Home({ agregarAlCarrito }) {
         </p>
         
         <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button style={{ padding: '15px 30px', backgroundColor: '#3b2f2f', color: 'white', border: '1px solid #3b2f2f', cursor: 'pointer', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', transition: '0.3s' }}>
-            Ver Menú
-          </button>
-          <button style={{ padding: '15px 30px', backgroundColor: 'transparent', color: 'white', border: '1px solid white', cursor: 'pointer', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', transition: '0.3s' }}>
-            Nuestra Historia
-          </button>
-        </div>
+  <button 
+    onClick={() => navigate('/menu')} // 👈 Te envía a la página del menú
+    style={{ padding: '15px 30px', backgroundColor: '#3b2f2f', color: 'white', border: '1px solid #3b2f2f', cursor: 'pointer', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', transition: '0.3s' }}
+  >
+    Ver Menú
+  </button>
+  
+  <button 
+    onClick={() => navigate('/nuestra-historia')} // 👈 Te envía a la página de historia
+    style={{ padding: '15px 30px', backgroundColor: 'transparent', color: 'white', border: '1px solid white', cursor: 'pointer', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', transition: '0.3s' }}
+  >
+    Nuestra Historia
+  </button>
+</div>
       </div>
 
       {/* CATÁLOGO */}
