@@ -42,41 +42,50 @@ export default function PanelAdmin() {
     return null;
   }
 
-  useEffect(() => {
-    const cargar = async () => {
-      setCargando(true);
-      try {
-        // 1. Obtenemos el token de donde lo tengas guardado (ej. localStorage)
-        const token = localStorage.getItem('token'); // Ajusta esto si usas otro nombre
-        
-        // 2. Preparamos las "credenciales"
-        const headers = {
+useEffect(() => {
+  const cargar = async () => {
+    setCargando(true);
+    try {
+      // 1. Obtenemos el token (Asegúrate de que así se llame en tu localStorage)
+      const token = localStorage.getItem('token'); 
+      
+      // 2. Configuramos las credenciales
+      const config = {
+        headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // 👈 AQUÍ ESTÁ LA LLAVE
-        };
+          'Authorization': `Bearer ${token}` // Aquí va la llave de acceso
+        }
+      };
 
-        if (seccion === 'pedidos' || seccion === 'dashboard' || seccion === 'ganancias') {
-          // 3. Mandamos las credenciales en la petición
-          const res = await fetch(`${API}/admin/pedidos`, { headers });
-          const json = await res.json();
-          setPedidos(json.data || []);
-        }
-        
-        if (seccion === 'usuarios') {
-          const res = await fetch(`${API}/admin/usuarios`, { headers });
-          const json = await res.json();
-          setUsuarios(json.data || []);
-        }
-        // ... haz lo mismo para productos si tu ruta de productos también pide token
-        
-      } catch (error) {
-        console.error('Error cargando datos:', error);
-      } finally {
-        setCargando(false);
+      if (seccion === 'productos' || seccion === 'dashboard') {
+        // Los productos suelen ser públicos, pero si los proteges, agrégale el config
+        const res = await fetch(`${API}/products`); 
+        const json = await res.json();
+        setProductos(json.data || []);
       }
-    };
-    cargar();
-  }, [seccion]);
+      
+      if (seccion === 'pedidos' || seccion === 'dashboard' || seccion === 'ganancias') {
+        // 3. Enviamos el config en la petición protegida
+        const res = await fetch(`${API}/admin/pedidos`, config);
+        const json = await res.json();
+        setPedidos(json.data || []);
+      }
+      
+      if (seccion === 'usuarios') {
+        // 3. Enviamos el config en la petición protegida
+        const res = await fetch(`${API}/admin/usuarios`, config);
+        const json = await res.json();
+        setUsuarios(json.data || []);
+      }
+    } catch (error) {
+      console.error('Error cargando datos:', error);
+    } finally {
+      setCargando(false);
+    }
+  };
+  
+  cargar();
+}, [seccion]);
 
   const cambiarEstadoPedido = async (id, estado) => {
     try {
