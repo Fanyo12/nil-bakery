@@ -51,20 +51,27 @@ export default function Menu({ agregarAlCarrito }) {
         ) : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
             
-            {/* Recorremos los productos que llegaron de la base de datos */}
-            {postres.map((postre) => (
-              <div key={postre.id} style={{ border: '1px solid #eee', padding: '25px', width: '220px', textAlign: 'center', backgroundColor: 'white', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                
-                {/* Nota: Si no tienes columna 'imagen' en tu DB, usamos la de por defecto */}
-                <img 
-                  src={postre.imagen || imgDefault} 
-                  alt={postre.nombre} 
-                  style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px' }} 
-                />
-                
-                <h3 style={{ fontSize: '18px', margin: '15px 0', color: '#333', fontFamily: 'serif' }}>
-                  {postre.nombre}
-                </h3>
+        {/* Recorremos los productos que llegaron de la base de datos */}
+        {postres.map((postre) => (
+          <div key={postre.id} style={{ border: '1px solid #eee', padding: '25px', width: '220px', textAlign: 'center', backgroundColor: 'white', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+            
+            {/* ✅ CAMBIO AQUÍ: 
+                Si 'postre.imagen' trae el nombre del archivo (ej: "pan.jpg"), 
+                lo buscamos en tu carpeta de assets. Si falla, usa imgDefault.
+            */}
+            <img 
+              src={postre.imagen ? `/src/assets/productos/${postre.imagen}` : imgDefault} 
+              alt={postre.nombre} 
+              style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px' }} 
+              onError={(e) => {
+                e.target.onerror = null; 
+                e.target.src = imgDefault; // Si no encuentra la foto, pone el cupcake
+              }}
+            />
+            
+            <h3 style={{ fontSize: '18px', margin: '15px 0', color: '#333', fontFamily: 'serif' }}>
+              {postre.nombre}
+            </h3>
                 
                 {/* Agregamos la descripción que viene de tu DB */}
                 <p style={{ fontSize: '12px', color: '#777', height: '40px', overflow: 'hidden' }}>
