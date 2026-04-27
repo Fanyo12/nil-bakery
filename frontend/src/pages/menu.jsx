@@ -59,13 +59,14 @@ export default function Menu({ agregarAlCarrito }) {
                 Si 'postre.imagen' trae el nombre del archivo (ej: "pan.jpg"), 
                 lo buscamos en tu carpeta de assets. Si falla, usa imgDefault.
             */}
-            <img 
-              src={postre.imagen ? `/src/assets/productos/${postre.imagen}` : imgDefault} 
+                        <img 
+              // Al estar en public, la ruta empieza directo con /productos/
+              src={postre.imagen ? `/productos/${postre.imagen}` : imgDefault} 
               alt={postre.nombre} 
               style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px' }} 
               onError={(e) => {
                 e.target.onerror = null; 
-                e.target.src = imgDefault; // Si no encuentra la foto, pone el cupcake
+                e.target.src = imgDefault; // Tu imgDefault (los cupcakes) se encarga si falla algo
               }}
             />
             
