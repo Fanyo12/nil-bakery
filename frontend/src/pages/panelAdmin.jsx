@@ -5,16 +5,26 @@ import '../styles/panelAdmin.css';
 
 const API = 'https://nil-bakery.onrender.com/api';
 
-// ✅ CAMBIO 1: Se agregó 'ganancias' como nueva sección en el sidebar
 const navItems = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard' },
   { id: 'productos', icon: '🍞', label: 'Productos' },
   { id: 'pedidos', icon: '📦', label: 'Pedidos' },
   { id: 'usuarios', icon: '👥', label: 'Usuarios' },
-  { id: 'ganancias', icon: '💰', label: 'Ganancias' }, // ← NUEVO
+  { id: 'ganancias', icon: '💰', label: 'Ganancias' },
 ];
 
 const estadoOpciones = ['pendiente', 'en-camino', 'completado'];
+
+// ✅ FIX 1: Helper FUERA del componente para obtener headers con token.
+// Antes cada fetch armaba los headers por separado (o no los enviaba).
+// Centralizarlo aquí garantiza que TODOS los fetch protegidos usen el mismo token.
+const getHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+};
 
 export default function PanelAdmin() {
   const { user, logout } = useAuth();
@@ -42,49 +52,39 @@ export default function PanelAdmin() {
     return null;
   }
 
-useEffect(() => {
+  useEffect(() => {
     const cargar = async () => {
       setCargando(true);
       try {
-        // 1. Buscamos el token. A veces está en localStorage, a veces dentro del usuario
-        const token = localStorage.getItem('token') || (user && user.token);
-        
-        // 🔴 DEBUG: Esto imprimirá en tu consola qué token estamos enviando
-        console.log("Token enviado al backend:", token);
-
-        // Si el token es null, el backend nos va a rechazar (Error 401)
-        if (!token) {
-          console.error("¡ALERTA! No se encontró el token. El backend rechazará la petición.");
-        }
-
-        // 2. Preparamos las credenciales
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        };
-
         if (seccion === 'productos' || seccion === 'dashboard') {
+          // Productos es ruta pública, no necesita token
           const res = await fetch(`${API}/products`);
           const json = await res.json();
           setProductos(json.data || []);
         }
-        
+
         if (seccion === 'pedidos' || seccion === 'dashboard' || seccion === 'ganancias') {
-          const res = await fetch(`${API}/admin/pedidos`, config);
-          
-          // 🔴 DEBUG: Revisamos qué responde el servidor
-          if (!res.ok) console.error("Error en pedidos:", res.status);
-          
-          const json = await res.json();
-          setPedidos(json.data || []);
+          // ✅ FIX 2: getHeaders() asegura que Authorization llega al backend
+          const res = await fetch(`${API}/admin/pedidos`, { headers: getHeaders() });
+          if (!res.ok) {
+            console.error('Error pedidos:', res.status);
+            setPedidos([]);
+          } else {
+            const json = await res.json();
+            setPedidos(json.data || []);
+          }
         }
-        
+
         if (seccion === 'usuarios') {
-          const res = await fetch(`${API}/admin/usuarios`, config);
-          const json = await res.json();
-          setUsuarios(json.data || []);
+          // ✅ FIX 3: igual que pedidos — token requerido
+          const res = await fetch(`${API}/admin/usuarios`, { headers: getHeaders() });
+          if (!res.ok) {
+            console.error('Error usuarios:', res.status);
+            setUsuarios([]);
+          } else {
+            const json = await res.json();
+            setUsuarios(json.data || []);
+          }
         }
       } catch (error) {
         console.error('Error cargando datos:', error);
@@ -93,15 +93,17 @@ useEffect(() => {
       }
     };
     cargar();
-  }, [seccion, user]); // Agregué 'user' a las dependencias por si el token viene de ahí
+  }, [seccion]); // ← solo depende de seccion, no de user (evita loops)
 
   const cambiarEstadoPedido = async (id, estado) => {
     try {
-      await fetch(`${API}/admin/pedidos/${id}`, {
+      // ✅ FIX 4: antes no enviaba token — ahora sí
+      const res = await fetch(`${API}/admin/pedidos/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({ estado })
       });
+      if (!res.ok) throw new Error('No autorizado');
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, estado } : p));
     } catch (error) {
       alert('Error al actualizar estado');
@@ -124,9 +126,10 @@ useEffect(() => {
     const url = editandoId ? `${API}/products/${editandoId}` : `${API}/products`;
     const method = editandoId ? 'PUT' : 'POST';
     try {
+      // ✅ FIX 5: antes no enviaba token — ahora sí
       await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify(productoForm)
       });
       setModalProducto(false);
@@ -141,45 +144,43 @@ useEffect(() => {
   const eliminarProducto = async (id) => {
     if (!confirm('¿Eliminar este producto?')) return;
     try {
-      await fetch(`${API}/products/${id}`, { method: 'DELETE' });
+      // ✅ FIX 6: antes no enviaba token — ahora sí
+      const res = await fetch(`${API}/products/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
+      if (!res.ok) throw new Error('No autorizado');
       setProductos(prev => prev.filter(p => p.id !== id));
     } catch (error) {
       alert('Error al eliminar');
     }
   };
 
-  // ✅ CAMBIO 3: ventasHoy ahora filtra TAMBIÉN por estado 'completado',
-  // antes solo filtraba por fecha y sumaba pedidos sin importar su estado.
   const ventasHoy = pedidos
     .filter(p =>
       new Date(p.fecha).toDateString() === new Date().toDateString() &&
-      p.estado === 'completado' // ← NUEVO filtro
+      p.estado === 'completado'
     )
     .reduce((sum, p) => sum + parseFloat(p.total), 0);
 
   const pedidosActivos = pedidos.filter(p => p.estado === 'pendiente' || p.estado === 'en-camino').length;
 
-  // ✅ CAMBIO 4: Nuevas variables para la sección de Ganancias
-  // Total acumulado de todos los pedidos completados (sin importar fecha)
   const ventasTotales = pedidos
     .filter(p => p.estado === 'completado')
     .reduce((sum, p) => sum + parseFloat(p.total), 0);
 
   const pedidosCompletados = pedidos.filter(p => p.estado === 'completado');
 
-  // Promedio de ingreso por pedido completado
   const promedioPorPedido = pedidosCompletados.length > 0
     ? ventasTotales / pedidosCompletados.length
     : 0;
 
-  // Agrupar ventas completadas por fecha para la gráfica de barras
   const ventasPorDia = pedidosCompletados.reduce((acc, p) => {
     const fecha = new Date(p.fecha).toLocaleDateString('es-MX');
     acc[fecha] = (acc[fecha] || 0) + parseFloat(p.total);
     return acc;
   }, {});
 
-  // Ordenar las fechas de más antigua a más reciente
   const diasGrafica = Object.entries(ventasPorDia).sort(
     (a, b) => new Date(a[0].split('/').reverse().join('-')) - new Date(b[0].split('/').reverse().join('-'))
   );
@@ -230,7 +231,6 @@ useEffect(() => {
           <>
             <div className="admin-stats">
               <div className="admin-stat-card">
-                {/* ✅ CAMBIO 5: El valor ahora es correcto porque ventasHoy ya filtra por completado */}
                 <div className="admin-stat-card__value">${ventasHoy.toFixed(0)}</div>
                 <div className="admin-stat-card__label">Ventas hoy</div>
               </div>
@@ -353,8 +353,13 @@ useEffect(() => {
                   <tr key={u.id}>
                     <td>{u.nombre}</td>
                     <td>{u.email}</td>
-                    <td><span className={`admin-badge admin-badge--${u.rol === 'admin' ? 'completado' : 'pendiente'}`}>{u.rol || 'cliente'}</span></td>
-                    <td>{u.total_pedidos}</td>
+                    <td>
+                      <span className={`admin-badge admin-badge--${u.rol === 'admin' ? 'completado' : 'pendiente'}`}>
+                        {u.rol || 'cliente'}
+                      </span>
+                    </td>
+                    {/* ✅ FIX 7: muestra 0 si total_pedidos llega null desde la API */}
+                    <td>{u.total_pedidos ?? 0}</td>
                   </tr>
                 ))}
               </tbody>
@@ -363,36 +368,29 @@ useEffect(() => {
         )}
 
         {/* ── GANANCIAS ── */}
-        {/* ✅ CAMBIO 6: Sección completamente nueva con tarjetas de resumen y gráfica de barras */}
         {seccion === 'ganancias' && !cargando && (
           <div>
-            {/* Tarjetas de resumen financiero */}
             <div className="admin-stats">
               <div className="admin-stat-card">
-                {/* Total de ingresos de todos los pedidos completados */}
                 <div className="admin-stat-card__value" style={{ color: '#b5835a' }}>
                   ${ventasTotales.toFixed(2)}
                 </div>
                 <div className="admin-stat-card__label">Ingresos totales</div>
               </div>
               <div className="admin-stat-card">
-                {/* Cantidad de pedidos que ya están en estado completado */}
                 <div className="admin-stat-card__value">{pedidosCompletados.length}</div>
                 <div className="admin-stat-card__label">Pedidos completados</div>
               </div>
               <div className="admin-stat-card">
-                {/* Cuánto genera en promedio cada pedido completado */}
                 <div className="admin-stat-card__value">${promedioPorPedido.toFixed(2)}</div>
                 <div className="admin-stat-card__label">Ticket promedio</div>
               </div>
               <div className="admin-stat-card">
-                {/* Ventas completadas del día actual */}
                 <div className="admin-stat-card__value">${ventasHoy.toFixed(2)}</div>
                 <div className="admin-stat-card__label">Ventas hoy</div>
               </div>
             </div>
 
-            {/* Gráfica de barras: ventas agrupadas por día */}
             <div className="admin-table-card">
               <div className="admin-table-header">
                 <h3 className="admin-table-title">📈 Ventas por Día</h3>
@@ -405,8 +403,6 @@ useEffect(() => {
                 </p>
               ) : (
                 <div style={{ padding: '20px 16px' }}>
-
-                  {/* Contenedor de barras */}
                   <div style={{
                     display: 'flex',
                     alignItems: 'flex-end',
@@ -419,18 +415,12 @@ useEffect(() => {
                     marginBottom: '8px'
                   }}>
                     {diasGrafica.map(([fecha, total]) => {
-                      // Altura proporcional al valor máximo, mínimo 10px para que sea visible
                       const altura = Math.max((total / maxVenta) * 175, 10);
                       return (
-                        <div
-                          key={fecha}
-                          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}
-                        >
-                          {/* Monto encima de la barra */}
+                        <div key={fecha} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                           <span style={{ fontSize: '11px', color: '#b5835a', fontWeight: '700' }}>
                             ${total.toFixed(0)}
                           </span>
-                          {/* Barra con degradado de la paleta del sitio */}
                           <div
                             title={`${fecha}: $${total.toFixed(2)}`}
                             style={{
@@ -440,7 +430,6 @@ useEffect(() => {
                               background: 'linear-gradient(to top, #3b2f2f, #b5835a)',
                               borderRadius: '6px 6px 0 0',
                               transition: 'height 0.4s ease',
-                              cursor: 'default',
                             }}
                           />
                         </div>
@@ -448,19 +437,14 @@ useEffect(() => {
                     })}
                   </div>
 
-                  {/* Etiquetas de fecha debajo de cada barra */}
                   <div style={{ display: 'flex', gap: '12px', paddingLeft: '8px' }}>
                     {diasGrafica.map(([fecha]) => (
-                      <div
-                        key={fecha}
-                        style={{ flex: 1, textAlign: 'center', fontSize: '10px', color: '#999', minWidth: '32px' }}
-                      >
+                      <div key={fecha} style={{ flex: 1, textAlign: 'center', fontSize: '10px', color: '#999', minWidth: '32px' }}>
                         {fecha}
                       </div>
                     ))}
                   </div>
 
-                  {/* Tabla de detalle debajo de la gráfica */}
                   <table className="admin-table" style={{ marginTop: '32px' }}>
                     <thead>
                       <tr>
@@ -471,7 +455,6 @@ useEffect(() => {
                     </thead>
                     <tbody>
                       {diasGrafica.map(([fecha, total]) => {
-                        // Contar cuántos pedidos hubo ese día
                         const cantDia = pedidosCompletados.filter(
                           p => new Date(p.fecha).toLocaleDateString('es-MX') === fecha
                         ).length;
@@ -483,7 +466,6 @@ useEffect(() => {
                           </tr>
                         );
                       })}
-                      {/* Fila de totales al final de la tabla */}
                       <tr style={{ borderTop: '2px solid #eee', fontWeight: '700' }}>
                         <td>Total general</td>
                         <td>{pedidosCompletados.length}</td>
