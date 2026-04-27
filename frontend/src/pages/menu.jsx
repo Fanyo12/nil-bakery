@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 // Asegúrate de tener una imagen llamada "cupcake_default.jpg" (o como le hayas puesto) en public/productos/
-const imgDefault = "/productos/cup_cakes.jpg";
+const imgDefault = "/productos/cup cakes.jpeg";
 
 export default function Menu({ agregarAlCarrito }) {
   // 1. Iniciamos el estado vacío y agregamos un estado de "cargando"
@@ -58,14 +58,17 @@ export default function Menu({ agregarAlCarrito }) {
                 Si 'postre.imagen' trae el nombre del archivo (ej: "pan.jpg"), 
                 lo buscamos en tu carpeta de assets. Si falla, usa imgDefault.
             */}
-                        <img 
-              // Al estar en public, la ruta empieza directo con /productos/
+            <img 
               src={postre.imagen ? `/productos/${postre.imagen}` : imgDefault} 
               alt={postre.nombre} 
               style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px' }} 
               onError={(e) => {
-                e.target.onerror = null; 
-                e.target.src = imgDefault; // Tu imgDefault (los cupcakes) se encarga si falla algo
+                // Si ya intentó poner la imagen por defecto, no lo vuelve a intentar
+                if (e.target.src.includes(imgDefault)) {
+                  e.target.src = "https://placehold.co/400x300?text=Foto+no+disponible"; // Salvavidas de internet
+                } else {
+                  e.target.src = imgDefault; // Primer intento de salvavidas
+                }
               }}
             />
             
