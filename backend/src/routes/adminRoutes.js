@@ -1,3 +1,4 @@
+import { verifyToken, isAdmin } from '../middlewares/authMiddleware.js';
 import express from 'express';
 import { 
   getAllPedidos, 
@@ -7,11 +8,8 @@ import {
 
 const router = express.Router();
 
-// ── PEDIDOS ──────────────────────────────
-router.get('/pedidos', getAllPedidos);
-router.put('/pedidos/:id', updatePedidoEstado);
-
-// ── USUARIOS ──────────────────────────────
-router.get('/usuarios', getAllUsuarios);
+router.get('/pedidos', verifyToken, isAdmin, getAllPedidos);
+router.put('/pedidos/:id', verifyToken, isAdmin, updatePedidoEstado);
+router.get('/usuarios', verifyToken, isAdmin, getAllUsuarios);
 
 export default router;
