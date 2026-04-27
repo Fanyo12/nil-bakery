@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
@@ -5,9 +8,11 @@ import authBasicRoutes from './routes/authBasicRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import pool from './config/db.js';
 import adminRoutes from './routes/adminRoutes.js';
+import webauthnRoutes from './routes/webauthnRoutes.js'; // 👈 arriba
 
 const app = express();
-import webauthnRoutes from './routes/webauthnRoutes.js';
+
+
 /* ============================
    MIDDLEWARES
 ============================ */
