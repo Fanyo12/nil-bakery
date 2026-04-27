@@ -1,12 +1,30 @@
 import pool from '../config/db.js';
 
+// Función auxiliar para normalizar nombres (Ej: "Pan Muerto" -> "pan_muerto.jpg")
+const formatImageName = (nombre) => {
+  if (!nombre) return 'cupcake_default.jpg';
+  return nombre
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '_') // Cambia espacios por guiones bajos
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quita acentos
+    + '.jpg';
+};
+
 // Obtener todos los productos
 export const getProducts = async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM productos ORDER BY created_at DESC');
+    
+    // Inyectamos la propiedad imagen dinámicamente
+    const dataWithImages = rows.map(p => ({
+      ...p,
+      imagen: formatImageName(p.nombre)
+    }));
+
     res.json({ 
       message: 'Productos obtenidos', 
-      data: rows 
+      data: dataWithImages 
     });
   } catch (error) {
     console.error('Error en getProducts:', error);
@@ -24,9 +42,14 @@ export const getProductById = async (req, res) => {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
     
+    const producto = {
+      ...rows[0],
+      imagen: formatImageName(rows[0].nombre)
+    };
+    
     res.json({ 
       message: 'Producto encontrado', 
-      data: rows[0] 
+      data: producto 
     });
   } catch (error) {
     console.error('Error en getProductById:', error);
@@ -39,7 +62,6 @@ export const createProduct = async (req, res) => {
   try {
     const { nombre, descripcion, precio, stock } = req.body;
     
-    // Validar campos obligatorios
     if (!nombre || !precio) {
       return res.status(400).json({ message: 'Nombre y precio son obligatorios' });
     }
@@ -53,7 +75,7 @@ export const createProduct = async (req, res) => {
     
     res.status(201).json({ 
       message: 'Producto creado exitosamente', 
-      data: newProduct[0] 
+      data: { ...newProduct[0], imagen: formatImageName(newProduct[0].nombre) }
     });
   } catch (error) {
     console.error('Error en createProduct:', error);

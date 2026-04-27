@@ -11,7 +11,13 @@ export const getAllPedidos = async (req, res) => {
       ORDER BY p.created_at DESC
     `);
 
-    res.json({ data: rows });
+    // Aseguramos que 'total' sea numérico para evitar problemas en el reduce de React
+    const dataFormatted = rows.map(p => ({
+      ...p,
+      total: parseFloat(p.total) || 0
+    }));
+
+    res.json({ data: dataFormatted });
   } catch (error) {
     res.status(500).json({
       message: 'Error al obtener pedidos',
@@ -42,10 +48,19 @@ export const updatePedidoEstado = async (req, res) => {
 // ── USUARIOS ──────────────────────────────
 export const getAllUsuarios = async (req, res) => {
   try {
+    // ✅ CORRECCIÓN: Agregamos LEFT JOIN y COUNT para obtener total_pedidos
     const [rows] = await pool.query(`
-      SELECT id, nombre, email, created_at
-      FROM usuarios
-      ORDER BY created_at DESC
+      SELECT 
+        u.id, 
+        u.nombre, 
+        u.email, 
+        u.rol,
+        u.created_at,
+        COUNT(p.id) AS total_pedidos
+      FROM usuarios u
+      LEFT JOIN pedidos p ON u.id = p.usuario_id
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
     `);
 
     res.json({ data: rows });
