@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-
-// Importamos una imagen por defecto por si algún producto en la base de datos no tiene foto
-import imgDefault from "../assets/cup cakes.jpeg"; 
+// Asegúrate de tener una imagen llamada "cupcake_default.jpg" (o como le hayas puesto) en public/productos/
+const imgDefault = "/productos/cup_cakes.jpg";
 
 export default function Menu({ agregarAlCarrito }) {
   // 1. Iniciamos el estado vacío y agregamos un estado de "cargando"
